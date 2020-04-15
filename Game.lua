@@ -40,6 +40,7 @@ function GameScene:create(event)
 
 
     timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
+    timer.performWithDelay(8000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
     display.setDefault("background", 204/255,204/255,204/255)
 end
     

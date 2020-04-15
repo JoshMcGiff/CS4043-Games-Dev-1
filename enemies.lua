@@ -5,6 +5,7 @@
     local enemyCollisionFilter = {categoryBits=16, maskBits=43}  -- Enemies collide with 1 (player), 2 (obstacles), 8 (bullets), 32 (walls)
     local enbulletCollisionFilter = {categoryBits=8, maskBits=35}  -- Bullets collides only with 1 (player), 2 (obstacles), 32 (walls)
 
+    local maxEnAmount = 12
     local enAmount = 0
     local enArray = {}
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
@@ -67,24 +68,37 @@
 		end
     end
 
-    local function enemies_SpawnAll()
-        while (enAmount < 6) do --spawn 8 enemies
-            local ranNum = math.random(1, 3) --pick random enemy between 3 (we only have 1 rn)
-            local en = nil
+    local function enemies_SpawnCommon(variant)
+        local en = nil
+        if (variant == 1) then
+            en = createEn1()
+        elseif (variant == 2) then
+            en = createEn2()
+        else
+            en = createEn3()
+        end
 
-            if (ranNum == 1) then
-                en = createEn1()
-            elseif (ranNum == 2) then
-                en = createEn2()
-            else
-                en = createEn3()
-            end
-
+        --if (not (el == nil)) then
             en.collision = enemyCollisions
             en:addEventListener("collision")
 
             enArray[enAmount] = en
             enAmount = enAmount+1
+        --end
+    end
+    
+    function enemyFuncs.SpawnRandom()
+        if enAmount > maxEnAmount then
+            return false
+        end
+
+        enemies_SpawnCommon(math.random(1, 3))
+        return true
+    end
+
+    local function enemies_SpawnAll()
+        while (enAmount < 4) do --spawn 4 enemies initially
+            enemyFuncs.SpawnRandom() -- random rn, but do we want enemies to get harder as game progresses?
         end
     end
     
