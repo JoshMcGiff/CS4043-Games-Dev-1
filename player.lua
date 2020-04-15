@@ -33,13 +33,13 @@
         player_right.isVisible = false
 
         if curImage == 1 then
-            player_back.isVisible = true
+            player_front.isVisible = true
         elseif curImage == 2 then
             player_left.isVisible = true
         elseif curImage == 3 then
             player_right.isVisible = true
         else 
-            player_front.isVisible = true
+            player_back.isVisible = true
         end
     end
 
@@ -187,10 +187,10 @@
     end
 
     function playerFuncs.setupPlayer()
-        player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 150, 150)
-        player_back = display.newImageRect(playerGroup, "Resources/Gfx/player_back.png", 150, 150)
-        player_left = display.newImageRect(playerGroup, "Resources/Gfx/player_left.png", 150, 150)
-        player_right = display.newImageRect(playerGroup, "Resources/Gfx/player_right.png", 150, 150)
+        player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 56, 95)
+        player_back = display.newImageRect(playerGroup, "Resources/Gfx/player_back.png", 56, 95)
+        player_left = display.newImageRect(playerGroup, "Resources/Gfx/player_left.png", 43, 95)
+        player_right = display.newImageRect(playerGroup, "Resources/Gfx/player_right.png", 43, 95)
         setupPlayerCommon(player_front, true)
         setupPlayerCommon(player_back, false)
         setupPlayerCommon(player_left, false)

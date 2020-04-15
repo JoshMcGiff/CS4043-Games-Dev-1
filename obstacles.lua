@@ -8,11 +8,11 @@
     local obGfxTable = {
         ["White"] = "Resources/Gfx/rock.png",
         ["Green"] = "Resources/Gfx/bush.png",
-        ["Blue"] = "Resources/Gfx/rock.png",
-        ["Red"] = "Resources/Gfx/rock.png",
-        ["Yellow"] = "Resources/Gfx/rock.png",
-        ["Cyan"] = "Resources/Gfx/rock.png",
-        ["Magenta"] = "Resources/Gfx/rock.png",
+        ["Blue"] = "Resources/Gfx/water.png",
+        ["Red"] = "Resources/Gfx/lava.png",
+        ["Yellow"] = "Resources/Gfx/danger.png",
+        ["Cyan"] = "Resources/Gfx/ice.png",
+        ["Magenta"] = "Resources/Gfx/poison.png",
     }
      
     local obAmount = 0;
