@@ -149,7 +149,7 @@
     end
 
     local function player_moveEnterFrame(event)
-        local moveAmount = 6
+        local moveAmount = 8 --This is player speed
         if (upPressed) then
             playerFuncs.setY(player_front.y - moveAmount)
         end
