@@ -115,12 +115,16 @@
     function enemyFuncs.Setup()
         enemies_RemoveAll()
         enemies_SpawnAll()
+    end
+    
+    function enemyFuncs.Cleanup()
+        enemies_RemoveAll()
+    end
 
-        timer.performWithDelay(5000, function() --every 5 seconds make all enemies shoot at player (can implement staggering or something later)
-            for i,v in ipairs (enArray) do
-                shootAtPlayer(v)
-            end
-        end, -1)
+    function enemyFuncs.allShoot()
+        for i,v in ipairs (enArray) do
+            shootAtPlayer(v)
+        end
     end
 
 return enemyFuncs

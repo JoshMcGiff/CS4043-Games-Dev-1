@@ -61,12 +61,14 @@ function managerFuncs.getRandomLocation(width, height)
     return 0,0
 end
 
-function managerFuncs.Clean()
+function managerFuncs.Cleanup()
     for i = 1, gridHeight do
         for j = 1, gridWidth do
             displayGrid[i][j] = false
         end
+        displayGrid[i] = nil
     end
+    displayGrid = {}
 end
 
 function managerFuncs.Setup()
@@ -140,8 +142,5 @@ function managerFuncs.move(obj, x, y)
         obj.y = obj.y + y
     end
 end
-
-
-
 
 return managerFuncs

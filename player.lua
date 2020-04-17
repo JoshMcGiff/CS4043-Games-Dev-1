@@ -235,5 +235,29 @@
         return (lives == 0) --return out of lives
     end
 
+    function playerFuncs.pause()
+        Runtime:removeEventListener("key", player_Move)
+        Runtime:removeEventListener("enterFrame", player_moveEnterFrame)
+        Runtime:removeEventListener("key", player_DirectionalBullet)
+        Runtime:removeEventListener("enterFrame", player_bulletEnterFrame)
+        Runtime:removeEventListener("touch", player_mouseBullet)
+    end
+
+    function playerFuncs.resume()
+        Runtime:addEventListener("key", player_Move)
+        Runtime:addEventListener("enterFrame", player_moveEnterFrame)
+        Runtime:addEventListener("key", player_DirectionalBullet)
+        Runtime:addEventListener("enterFrame", player_bulletEnterFrame)
+        Runtime:addEventListener("touch", player_mouseBullet)
+    end
+
+    function playerFuncs.Cleanup()
+        playerFuncs.pause()
+        display.remove(player_front)
+        display.remove(player_back)
+        display.remove(player_left)
+        display.remove(player_right)
+    end
+
 
 return playerFuncs

@@ -72,4 +72,13 @@ function colourFuncs.updateObjColour(obj)
     obj:setFillColor(cl[1], cl[2], cl[3])
 end
 
+function colourFuncs.Cleanup()
+    while (callbackAmount > 0) do
+        callbacks[callbackAmount-1] = nil	
+        callbackAmount = callbackAmount-1
+    end
+
+    curColour = "White"
+end
+
 return colourFuncs

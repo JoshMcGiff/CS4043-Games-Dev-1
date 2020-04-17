@@ -1,16 +1,78 @@
 local composer = require("composer")
 local GameScene = composer.newScene()
 
+local colourMan = require("colourManager")
 local displayMan = require("displayManager")
 local obstacleFuncs = require("obstacles")
 local pickupFuncs = require("pickups")
 local enemies = require("enemies")
 local player = require("player")
-
-local wallCollisionFilter = {categoryBits=32, maskBits=25}  -- Walls collides only with 1 (player), 8 (bullets) and 16 (enemies)
-
 local physics = require("physics")
 physics.start()
+
+local wallCollisionFilter = {categoryBits=32, maskBits=25}  -- Walls collides only with 1 (player), 8 (bullets) and 16 (enemies)
+local pickupSpawnTimer = nil
+local enemySpawnTimer = nil
+local enemyShootTimer = nil
+
+local Wall1 = nil
+local Wall2 = nil
+local Wall3 = nil
+local Wall4 = nil
+
+local function gameLoop()
+
+
+end
+
+local function spawn_PauseMenu(event)
+    if (event.phase == "down") then
+        if (event.keyName == "escape") then
+            pauseGame()
+        end
+    end
+end
+
+function pauseGame()
+    _G.gamePaused = true --set a global value
+    timer.pause(pickupSpawnTimer)
+    timer.pause(enemySpawnTimer)
+    timer.pause(enemyShootTimer)
+    pickupFuncs.pause()
+    player.pause()
+    physics.pause()
+    audio.pause()
+    
+    --Show pause screen
+    composer.showOverlay("pauseScreen", {isModal = true, effect = "fade", time = 300})
+end
+
+function GameScene:resumeGame()
+    audio.resume()
+    physics.start()
+    player.resume()
+    pickupFuncs.resume()
+    timer.resume(enemyShootTimer)
+    timer.resume(enemySpawnTimer)
+    timer.resume(pickupSpawnTimer)
+    _G.gamePaused = false --set a global value
+end
+
+function GameScene:cleanupGame()
+    timer.cancel(pickupSpawnTimer)
+    timer.cancel(enemySpawnTimer)
+    timer.cancel(enemyShootTimer)
+    player.Cleanup()
+    obstacleFuncs.Cleanup()
+    enemies.Cleanup()
+    pickupFuncs.Cleanup()
+    displayMan.Cleanup()
+    colourMan.Cleanup()
+    display.remove(Wall1)
+    display.remove(Wall2)
+    display.remove(Wall3)
+    display.remove(Wall4)
+end
 
 function GameScene:create(event)
     audio.stop()
@@ -20,10 +82,10 @@ function GameScene:create(event)
 
     
     -- wall stuff from enemies file, probably needs to be reworked a bit
-    local Wall1 = display.newRect(1920,540,10,1080)
-    local Wall2 = display.newRect(960,0,1920,10)
-    local Wall3 = display.newRect(960,1080,1920,10)
-    local Wall4 = display.newRect(0,540,10,1080)
+    Wall1 = display.newRect(1920,540,10,1080)
+    Wall2 = display.newRect(960,0,1920,10)
+    Wall3 = display.newRect(960,1080,1920,10)
+    Wall4 = display.newRect(0,540,10,1080)
     Wall1:setFillColor(1,1,0)
     Wall2:setFillColor(0,1,1)
     Wall3:setFillColor(0,1,1)
@@ -41,9 +103,12 @@ function GameScene:create(event)
     player.setupPlayer()
 
 
-    timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
-    timer.performWithDelay(8000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
+    pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
+    enemySpawnTimer = timer.performWithDelay(8000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
+    enemyShootTimer = timer.performWithDelay(5000, function() enemies.allShoot() end, -1) --every 5 seconds make all enemies shoot at player 
+
     display.setDefault("background", 204/255,204/255,204/255)
+    Runtime:addEventListener("key", spawn_PauseMenu)
 end
     
 -- show()
@@ -66,6 +131,7 @@ function GameScene:hide(event)
     local phase = event.phase
 
     if (phase == "will") then
+        self:cleanupGame()
 
     elseif (phase == "did") then
 
@@ -77,7 +143,6 @@ end
 function GameScene:destroy(event)
     local sceneGroup = self.view
     print("GameScene:destroy\n")
-    timer.stop()
 end
 
 -- Scene event function listeners

@@ -32,6 +32,8 @@
 	local magentaPickup = nil
     local cyanPickup = nil
 
+    local pickupDespawnTimerTable = {}
+
     local function changeDisplayColour(colour)
         if (colour == "bluePickup") then
             display.setDefault("background", 128/255, 128/255, 255/255)
@@ -49,7 +51,7 @@
             display.setDefault("background", 255/255, 128/255, 255/255)
         
         elseif (colour == "cyanPickup") then
-            display.setDefault("background", 128/255, 255/255, 258/255)
+            display.setDefault("background", 128/255, 255/255, 255/255)
         end
     end
 
@@ -73,7 +75,11 @@
         pickup.collision = pickupCollisions
         pickup:addEventListener("collision")
 
-        timer.performWithDelay(10000, function() displayMan.remove(pickup) end)
+        local timer = timer.performWithDelay(10000, function() 
+            displayMan.remove(pickup)
+            table.remove(pickupDespawnTimerTable, 0) 
+        end)
+        table.insert(pickupDespawnTimerTable, timer)
     end
 
     local function spawnBlue()
@@ -137,6 +143,42 @@
         spawnMagenta()
         spawnYellow()
         spawnCyan()
+    end
+
+    function pickupFuncs.Cleanup()
+        audio.dispose(pickUpSound)
+        pickUpSound = nil
+        -- Unload All colours --
+        displayMan.remove(bluePickup)
+        displayMan.remove(greenPickup)
+        displayMan.remove(redPickup)
+        displayMan.remove(yellowPickup)
+        displayMan.remove(magentaPickup)
+        displayMan.remove(cyanPickup)
+        bluePickup = nil
+        greenPickup = nil
+        redPickup = nil
+        yellowPickup = nil
+        magentaPickup = nil
+        cyanPickup = nil
+        for i,v in ipairs (pickupDespawnTimerTable) do
+            timer.cancel(v)
+            v = nil
+            table.remove(pickupDespawnTimerTable, i)
+        end
+        pickupDespawnTimerTable = {}
+    end
+
+    function pickupFuncs.pause()
+        for i,v in ipairs (pickupDespawnTimerTable) do
+            timer.pause(v)
+        end
+    end
+
+    function pickupFuncs.resume()
+        for i,v in ipairs (pickupDespawnTimerTable) do
+            timer.resume(v)
+        end
     end
 
 return pickupFuncs

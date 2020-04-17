@@ -94,8 +94,8 @@ function MainMenuUI:show( event )
 
     if ( phase == "will" ) then
         background.isVisible = true
-        
         buttonGroup.isVisible = true
+        composer.removeHidden() --delete other scenes like game to completely reset
 	elseif ( phase == "did" ) then
         
 	end

@@ -47,6 +47,10 @@
         obstacles_SpawnAll(obGfxTable["White"])
         colourMan.addCallback(function()updateObstacles()end)
     end
+    
+    function obstacleFuncs.Cleanup()
+        obstacles_RemoveAll()
+    end
 
 
 return obstacleFuncs
