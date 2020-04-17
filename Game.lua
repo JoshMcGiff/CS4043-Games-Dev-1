@@ -1,6 +1,7 @@
 local composer = require("composer")
 local GameScene = composer.newScene()
 
+local displayMan = require("displayManager")
 local obstacleFuncs = require("obstacles")
 local pickupFuncs = require("pickups")
 local enemies = require("enemies")
@@ -33,6 +34,7 @@ function GameScene:create(event)
     physics.addBody(Wall3, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
     physics.addBody(Wall4, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
 
+    displayMan.Setup() --should always be done first
     pickupFuncs.Setup()
     enemies.Setup()
     obstacleFuncs.Setup()

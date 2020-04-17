@@ -1,9 +1,9 @@
 
     local colourMan = require("colourManager")
+    local displayMan = require("displayManager")
 
     local obstacleFuncs = {}
     local obstacleCollisionFilter = {categoryBits=2, maskBits=9}    --Obstacles (2) collides with player (1) and playerBullets (8)
-    local obstacleGroup = display.newGroup()
 
     local obGfxTable = {
         ["White"] = "Resources/Gfx/rock.png",
@@ -20,13 +20,8 @@
 
     local function obstacles_SpawnAll(fileName)
         while (obAmount < 6) do --spawn 6 obstacles
-            local ranX = math.random(0, display.contentWidth)
-            local ranY = math.random(0, display.contentHeight)
             local dimensions = math.random(100, 200)
-            local ob = display.newImageRect(fileName, dimensions, dimensions)
-            ob.myName = fileName
-            ob.x = ranX
-            ob.y = ranY
+            local ob = displayMan.newRandomImageRect(fileName, dimensions, dimensions)
             physics.addBody(ob, "static", {density=1.0, filter=obstacleCollisionFilter})
             obArray[obAmount] = ob
             obAmount = obAmount+1            
@@ -36,7 +31,7 @@
     local function obstacles_RemoveAll()
         while (obAmount > 0) do
             physics.removeBody(obArray[obAmount-1])
-            display.remove(obArray[obAmount-1])	
+            displayMan.remove(obArray[obAmount-1])	
             obAmount = obAmount-1
         end
     end

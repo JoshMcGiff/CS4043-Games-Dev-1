@@ -1,5 +1,6 @@
 
     local colourMan = require("colourManager")
+    local displayMan = require("displayManager")
 
     local pickupFuncs = {}
     local pickupCollisionFilter = {categoryBits=4, maskBits=1}    --Pickups (4) collide with player (1)
@@ -61,57 +62,52 @@
             --timer needed as cant change collisions in collision event
             timer.performWithDelay(50, function() colourMan.setCommonColour(colourTable[self.myName], true) end)
             changeDisplayColour(self.myName)
-			display.remove(self)
+			displayMan.remove(self)
 		end
     end
 
     local function pickupSpawnCommon(pickup)
-        local ranX = math.random(0,display.contentWidth)
-		local ranY = math.random(0, display.contentHeight)
-
         pickup.isVisible = true
-		pickup.x = ranX
-        pickup.y = ranY
 		physics.addBody(pickup, "static", {filter=pickupCollisionFilter})
 
         pickup.collision = pickupCollisions
         pickup:addEventListener("collision")
 
-        timer.performWithDelay(10000, function() display.remove(pickup) end)
+        timer.performWithDelay(10000, function() displayMan.remove(pickup) end)
     end
 
     local function spawnBlue()
-		bluePickup = display.newImageRect("Resources/Gfx/blue.png", 50, 50)
+		bluePickup = displayMan.newRandomImageRect("Resources/Gfx/blue.png", 50, 50)
         bluePickup.myName = "bluePickup"
         pickupSpawnCommon(bluePickup)
 	end
 				
 	local function spawnGreen()
-		greenPickup = display.newImageRect("Resources/Gfx/green.png", 50, 50)
+		greenPickup = displayMan.newRandomImageRect("Resources/Gfx/green.png", 50, 50)
         greenPickup.myName = "greenPickup"
         pickupSpawnCommon(greenPickup)
 	end
 					
 	local function spawnRed()
-		redPickup = display.newImageRect("Resources/Gfx/red.png", 50, 50)
+		redPickup = displayMan.newRandomImageRect("Resources/Gfx/red.png", 50, 50)
         redPickup.myName = "redPickup"
 		pickupSpawnCommon(redPickup)
 	end
 			
 	local function spawnMagenta()
-		magentaPickup = display.newImageRect("Resources/Gfx/magenta.png", 50, 50)
+		magentaPickup = displayMan.newRandomImageRect("Resources/Gfx/magenta.png", 50, 50)
         magentaPickup.myName = "magentaPickup"
         pickupSpawnCommon(magentaPickup)
     end
 
 	local function spawnYellow()
-		yellowPickup = display.newImageRect("Resources/Gfx/yellow.png", 50, 50)
+		yellowPickup = displayMan.newRandomImageRect("Resources/Gfx/yellow.png", 50, 50)
         yellowPickup.myName = "yellowPickup"
         pickupSpawnCommon(yellowPickup)
 	end
 
     local function spawnCyan()
-		cyanPickup = display.newImageRect("Resources/Gfx/cyan.png", 50, 50)
+		cyanPickup = displayMan.newRandomImageRect("Resources/Gfx/cyan.png", 50, 50)
         cyanPickup.myName = "cyanPickup"
         pickupSpawnCommon(cyanPickup)
 	end

@@ -1,5 +1,6 @@
     local physics = require("physics")
     local player = require("player")
+    local displayMan = require("displayManager")
 
     local enemyFuncs = {}
     local enemyCollisionFilter = {categoryBits=16, maskBits=43}  -- Enemies collide with 1 (player), 2 (obstacles), 8 (bullets), 32 (walls)
@@ -11,7 +12,8 @@
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
 
     local function createEn1()
-        local en = display.newRect(math.random(250,1900), math.random(200,1000), 50, 50)
+        local width, height = 50, 50
+        local en = displayMan.newRandomRect(width, height)
         en:setFillColor(0,0,0) --make enemy black
         physics.addBody(en, "static", {density = 1.0, friction = 0.5, bounce = 0.8, filter=enemyCollisionFilter})
         en.myName = "en1"
@@ -55,7 +57,7 @@
 
     local function enemyCollisions(self, event)
         if event.phase == "began" and (event.other.myName == "bullet") then --player bullet, not enemies own bullet
-            display.remove(self)
+            displayMan.remove(self)
             event.other.isVisible = false --don't manually remove bullet as player stuff auto removes it using timer
 
             for index, v in ipairs (enArray) do 
@@ -104,7 +106,7 @@
     
     local function enemies_RemoveAll()
         while (enAmount > 0) do
-            display.remove(enArray[enAmount-1])
+            displayMan.remove(enArray[enAmount-1])
             enArray[enAmount-1] = nil	
             enAmount = enAmount-1
         end
