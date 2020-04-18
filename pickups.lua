@@ -6,11 +6,11 @@
     local pickupCollisionFilter = {categoryBits=4, maskBits=1}    --Pickups (4) collide with player (1)
 
     local soundTable = {
-        ["bluePickup"] = audio.loadStream("Resources/Audio/Magenta.wav"),
+        ["bluePickup"] = audio.loadStream("Resources/Audio/Blue.wav"),
 	    ["greenPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
-	    ["redPickup"] = audio.loadStream("Resources/Audio/out.wav"),
-	    ["yellowPickup"] = audio.loadStream("Resources/Audio/out.wav"),
-	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Magenta.wav"),
+	    ["redPickup"] = audio.loadStream("Resources/Audio/Red.wav"),
+	    ["yellowPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
+	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
         ["cyanPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
     }
 
