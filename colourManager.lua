@@ -79,6 +79,8 @@ function colourFuncs.Cleanup()
     end
 
     curColour = "White"
+    callbackAmount = 1
+    callbacks = {}
 end
 
 return colourFuncs
