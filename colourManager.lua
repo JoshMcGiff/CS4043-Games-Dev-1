@@ -11,6 +11,16 @@ local colourTable = {
     ["Blue"] = {0,0,1},
 }
 
+local colourUsedTable = {
+    ["White"] = false,
+    ["Green"] = false,
+    ["Red"] = false,
+    ["Cyan"] = false,
+    ["Magenta"] = false,
+    ["Yellow"] = false,
+    ["Blue"] = false,
+}
+
 --This table allows us to store functions (with no params) to call when we change colour, saving us from doing it manually for everything
 local callbacks = {}
 local callbackAmount = 1
@@ -37,6 +47,16 @@ function colourFuncs.validColour(colour)
     end
 end
 
+function colourFuncs.achievement1()
+    return colourUsedTable["Cyan"]
+end
+function colourFuncs.achievement2()
+    return colourUsedTable["Red"]
+end
+function colourFuncs.achievement3()
+    return colourUsedTable["Yellow"]
+end
+
 local function runCallbacks()
     amount = 1
     while (amount < callbackAmount) do
@@ -51,6 +71,7 @@ end
 function colourFuncs.setCommonColour(colour, runCBs)
     if (colourFuncs.validColour(colour)) then
         curColour = colour
+        colourUsedTable[colour] = true
         if (runCBs == true) then
             runCallbacks()
         end
