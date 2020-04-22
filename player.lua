@@ -23,6 +23,10 @@
     local leftBullet = 0
     local rightBullet = 0
 
+    local bulletMaxCountdown = 500
+    local bulletSkipCountdown = false
+    local bulletCurCountdown = bulletMaxCountdown
+    local bulletCountdownTimer = nil
     
     local player_front = nil
     local player_back = nil
@@ -50,9 +54,14 @@
 
     --Common function that sets up and spawns player bullet
     local function player_bulletCommon(xForce, yForce)
-        rad = 10
-        if (colourMan.getColourString() == "Red") then
-            rad = 20
+        if bulletCurCountdown > 0 and bulletSkipCountdown == false then --magenta ability is no cooldown
+            return
+        end
+        bulletCurCountdown = bulletMaxCountdown
+
+        local rad = 10
+        if (colourMan.getColourString() == "Red") then --we make the bullet bigger and slower when its more damage
+            rad = 13
         end
 
         local bullet = display.newCircle(playerFuncs.getX(), playerFuncs.getY(), rad)
@@ -226,11 +235,19 @@
         else
             moveAmount = 8
         end
+        
+        if (colourMan.getColourString() == "Magenta") then
+            bulletSkipCountdown = true --No cooldown on bullet shooting when magenta
+        else
+            bulletSkipCountdown = false
+        end
     end
 
     local function setupPlayerCommon(player, vis)
         player.x = display.contentCenterX
         player.y = display.contentCenterY
+        player.anchorX = 0.0
+        player.anchorY = 0.0
         player.isVisible = vis
         player:setFillColor(1,1,1)
         player.myName = "player"
@@ -250,6 +267,11 @@
         moveAmount = 8
         lives = playerMaxLives
         gameCallback = callback
+        
+        bulletSkipCountdown = false
+        bulletCurCountdown = bulletMaxCountdown
+        bulletCountdownTimer = timer.performWithDelay(bulletMaxCountdown, function() bulletCurCountdown = 0 end, -1)
+
         player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 56, 95)
         player_back = display.newImageRect(playerGroup, "Resources/Gfx/player_back.png", 56, 95)
         player_left = display.newImageRect(playerGroup, "Resources/Gfx/player_left.png", 43, 95)
@@ -327,14 +349,16 @@
         Runtime:removeEventListener("key", player_DirectionalBullet)
         Runtime:removeEventListener("enterFrame", player_bulletEnterFrame)
         Runtime:removeEventListener("touch", player_mouseBullet)
+        timer.pause(bulletCountdownTimer)
     end
-
+    
     function playerFuncs.resume()
         Runtime:addEventListener("key", player_Move)
         Runtime:addEventListener("enterFrame", player_moveEnterFrame)
         Runtime:addEventListener("key", player_DirectionalBullet)
         Runtime:addEventListener("enterFrame", player_bulletEnterFrame)
         Runtime:addEventListener("touch", player_mouseBullet)
+        timer.resume(bulletCountdownTimer)
     end
 
     function playerFuncs.Cleanup()
