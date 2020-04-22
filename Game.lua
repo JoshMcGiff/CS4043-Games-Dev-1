@@ -14,7 +14,7 @@ local wallCollisionFilter = {categoryBits=32, maskBits=25}  -- Walls collides on
 local pickupSpawnTimer = nil
 local enemySpawnTimer = nil
 local enemyShootTimer = nil
-
+local background = nil
 local clockText = nil
 local countDownTimer = nil
 local secondsLeft = nil
@@ -28,6 +28,10 @@ local livesArray = {}
 local function gameLoop()
 
 
+end
+
+local function changeBackground()
+    colourMan.updateObjColour(background)
 end
 
 local function spawn_PauseMenu(event)
@@ -135,6 +139,7 @@ function GameScene:cleanupGame()
     display.remove(Wall3)
     display.remove(Wall4)
     display.remove(clockText)
+    display.remove(background)
 end
 
 function GameScene:create(event)
@@ -162,23 +167,33 @@ function GameScene:create(event)
 
     displayMan.Setup() --should always be done first
     pickupFuncs.Setup()
-    enemies.Setup()
+    timer.performWithDelay(10000, 
+        function() enemies.Setup()
+            enemySpawnTimer = timer.performWithDelay(1000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
+            enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
+        end, 1)
     obstacleFuncs.Setup()
     player.setupPlayer(updateHealth)
-    updateHealth() --call to setup once
-
+    updateHealth() --call to setup once=
+    background = display.newImageRect( "Resources/Gfx/background.jpg", 1920, 1080 )
+    background.x = display.contentCenterX
+    background.y = display.contentCenterY
+    background:toBack()
     secondsLeft = 0
+    colourMan.addCallback(changeBackground)
     clockText = display.newText( "00:00", display.contentCenterX/5, 80, "Resources/Gfx/GLITCH-Light.otf", 150 )
     clockText:setFillColor( 0, 0, 0 )
 
     countDownTimer = timer.performWithDelay( 1000, updateTime, -1)
     pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
-    enemySpawnTimer = timer.performWithDelay(1000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 secondswww
-    enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)
     Runtime:addEventListener("key", spawn_DeathScreen)
+end
+
+local function updateColour()
+    colourMan.updateObjColour(background)
 end
     
 -- show()

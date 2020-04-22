@@ -8,7 +8,7 @@ local colourTable = {
     ["Cyan"] = {0,1,1},
     ["Magenta"] = {1,0,1},
     ["Yellow"] = {1,1,0},
-    ["Blue"] = {0,0,1},
+    ["Blue"] = {0,191/255,1},
 }
 
 local colourUsedTable = {

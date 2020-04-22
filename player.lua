@@ -245,7 +245,7 @@
 
     local function setupPlayerCommon(player, vis)
         player.x = display.contentCenterX
-        player.y = display.contentCenterY
+        player.y = display.contentCenterY * 0.95
         player.anchorX = 0.0
         player.anchorY = 0.0
         player.isVisible = vis

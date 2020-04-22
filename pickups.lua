@@ -82,6 +82,54 @@
         table.insert(pickupDespawnTimerTable, timer)
     end
 
+    local function spawnStartBlue()
+        bluePickup = displayMan.newRandomImageRect("Resources/Gfx/blue.png", 50, 50)
+        bluePickup.x = display.contentCenterX
+        bluePickup.y = display.contentCenterY - (display.contentCenterY * 0.25)
+        bluePickup.myName = "bluePickup"
+        pickupSpawnCommon(bluePickup)
+    end
+    
+    local function spawnStartGreen()
+        greenPickup = displayMan.newRandomImageRect("Resources/Gfx/green.png", 50, 50)
+        greenPickup.x = display.contentCenterX
+        greenPickup.y = display.contentCenterY + (display.contentCenterY * 0.25)
+        greenPickup.myName = "greenPickup"
+        pickupSpawnCommon(greenPickup)
+    end
+
+    local function spawnStartRed()
+        redPickup = displayMan.newRandomImageRect("Resources/Gfx/red.png", 50, 50)
+        redPickup.x = display.contentCenterX - (display.contentCenterY * 0.18)
+        redPickup.y = display.contentCenterY - (display.contentCenterY * 0.10)
+        redPickup.myName = "redPickup"
+		pickupSpawnCommon(redPickup)
+    end
+
+    local function spawnStartMagenta()
+        magentaPickup = displayMan.newRandomImageRect("Resources/Gfx/magenta.png", 50, 50)
+        magentaPickup.x = display.contentCenterX + (display.contentCenterY * 0.18)
+        magentaPickup.y = display.contentCenterY - (display.contentCenterY * 0.10)
+        magentaPickup.myName = "magentaPickup"
+        pickupSpawnCommon(magentaPickup)
+    end
+
+    local function spawnStartYellow()
+        yellowPickup = displayMan.newRandomImageRect("Resources/Gfx/yellow.png", 50, 50)
+        yellowPickup.x = display.contentCenterX - (display.contentCenterY * 0.18)
+        yellowPickup.y = display.contentCenterY + (display.contentCenterY * 0.10)
+        yellowPickup.myName = "yellowPickup"
+        pickupSpawnCommon(yellowPickup)
+    end
+    
+    local function spawnStartCyan()
+        cyanPickup = displayMan.newRandomImageRect("Resources/Gfx/cyan.png", 50, 50)
+        cyanPickup.x = display.contentCenterX + (display.contentCenterY * 0.18)
+        cyanPickup.y = display.contentCenterY + (display.contentCenterY * 0.10)
+        cyanPickup.myName = "cyanPickup"
+        pickupSpawnCommon(cyanPickup)
+    end
+    
     local function spawnBlue()
 		bluePickup = displayMan.newRandomImageRect("Resources/Gfx/blue.png", 50, 50)
         bluePickup.myName = "bluePickup"
@@ -137,12 +185,12 @@
     function pickupFuncs.Setup()
         pickUpSound = audio.loadStream("Resources/Audio/switch.wav")
         --Initially Spawn in All 6 colours --
-        spawnBlue()
-        spawnRed()
-        spawnGreen()
-        spawnMagenta()
-        spawnYellow()
-        spawnCyan()
+        spawnStartBlue()
+        spawnStartRed()
+        spawnStartGreen()
+        spawnStartMagenta()
+        spawnStartYellow()
+        spawnStartCyan()
     end
 
     function pickupFuncs.Cleanup()
