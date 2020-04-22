@@ -16,6 +16,7 @@
 
     --Player Directional Bullets: 0 = not shot, 1 = waiting to get shot, 2 = has been shot and waiting for key to be released
     local bulletForce = 1.5 --bullet force ('speed') scale
+    local bulletDamage = 1.0
     local upBullet = 0
     local downBullet = 0
     local leftBullet = 0
@@ -89,6 +90,7 @@
             if (event.other.myName == "enBullet" and hit_enBullet == false) then
                 hit_enBullet = true
                 display.remove(event.other)
+                event.other.isVisible = false --don't manually remove bullet as enemy stuff auto removes it using timer
                 timer.performWithDelay(1000, function() hit_enBullet = false end)
             elseif (event.other.myName == "en1" and hit_en1 == false) then
                 hit_en1 = true
@@ -200,7 +202,8 @@
             playerFuncs.setX(player_front.x + moveAmount)
         end
     end
-      
+     
+    --colour manager callback
     local function updateColour()
         colourMan.updateObjColour(player_front)
         colourMan.updateObjColour(player_back)
@@ -210,6 +213,11 @@
         player_right:toFront()
         player_back:toFront()
         player_front:toFront()
+        if (colourMan.getColourString() == "Red") then
+            bulletDamage = 1.5 --We increase bullet damage to 1.5 when red
+        else
+            bulletDamage = 1.0
+        end
     end
 
     local function setupPlayerCommon(player, vis)
@@ -226,10 +234,11 @@
     end
 
     function playerFuncs.setupPlayer(callback)
-        upPressed=false
-        downPressed=false
-        leftPressed=false
-        rightPressed=false
+        upPressed = false
+        downPressed = false
+        leftPressed = false
+        rightPressed = false
+        bulletDamage = 1.0
         lives = playerMaxLives
         gameCallback = callback
         player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 56, 95)
@@ -246,7 +255,7 @@
         Runtime:addEventListener("key", player_DirectionalBullet)
         Runtime:addEventListener("enterFrame", player_bulletEnterFrame)
         Runtime:addEventListener("touch", player_mouseBullet)
-        colourMan.addCallback(updateColour)
+        colourMan.addCallback(updateColour) --add function to colour manager callbacks, which get called when we get a new colour
     end
     
   
@@ -293,6 +302,10 @@
     function playerFuncs.add1Life()
         lives = lives+1
         return false --return out of lives
+    end
+
+    function playerFuncs.getBulletDamage()
+        return bulletDamage --return bullet damage
     end
 
     function playerFuncs.pause()

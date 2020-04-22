@@ -30,11 +30,6 @@ function colourFuncs.getColourString()
     return curColour
 end
 
---Returns a table with the current colour values
-function colourFuncs.getColourValue()
-    return curColour
-end
-
 function colourFuncs.validColour(colour)
     if (colour == "White" or colour == "Green") then
         return true

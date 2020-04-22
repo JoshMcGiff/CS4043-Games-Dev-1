@@ -1,6 +1,7 @@
     local physics = require("physics")
     local player = require("player")
     local displayMan = require("displayManager")
+    local colourMan = require("colourManager")
 
     local enemyFuncs = {}
     local enemyCollisionFilter = {categoryBits=16, maskBits=43}  -- Enemies collide with 1 (player), 2 (obstacles), 8 (bullets), 32 (walls)
@@ -10,6 +11,11 @@
     local enAmount = 0
     local enArray = {}
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
+    local enMoveSpeed = 2000 --In ms
+
+    local function getMoveSpeed()
+        return enMoveSpeed
+    end
 
     local function createEn1() -- Stationary beech
         local width, height = 50, 50
@@ -17,6 +23,7 @@
         en:setFillColor(0,0,0) --make enemy black
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         en.myName = "en1"
+        en.lives = 3.0 --has 3 lives
         return en
     end
 
@@ -26,8 +33,10 @@
         en:setFillColor(1,1,1) --make enemy white
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         en.myName = "en2"
+        en.lives = 1.5 --has 1.5 lives
         timer.performWithDelay(5000, function() 
-            transition.to(en, {time=2000, alpha=1.0, transition=easing.outQuint, x=player.getX(), y=player.getY()} ) 
+            speed = getMoveSpeed()
+            transition.to(en, {time=speed, alpha=1.0, transition=easing.outQuint, x=player.getX(), y=player.getY()} ) 
         end, -1)        
         
         return en
@@ -40,9 +49,11 @@
         en.fill = { type="image", filename="Resources/Gfx/lava.png" }
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         timer.performWithDelay(4000, function() 
-            transition.to(en, {time=2000, alpha=1.0, transition=easing.inOutCirc, x=player.getX(), y=player.getY()} ) 
+            speed = getMoveSpeed()
+            transition.to(en, {time=speed, alpha=1.0, transition=easing.inOutCirc, x=player.getX(), y=player.getY()} ) 
         end, -1)
         en.myName = "en3"
+        en.lives = 2.0 --has 2.0 lives
         return en
     end
 
@@ -82,17 +93,35 @@
     
     local function enemyCollisions(self, event)
         if event.phase == "began" and (event.other.myName == "bullet") then --player bullet, not enemies own bullet
-            displayMan.remove(self)
+            self.lives = self.lives-player.getBulletDamage()
             event.other.isVisible = false --don't manually remove bullet as player stuff auto removes it using timer
+            if self.lives <= 0 then
+                displayMan.remove(self)
 
-            for index, v in ipairs (enArray) do 
-                if (v == self) then
-                    table.remove(enArray, index)
-                    enAmount = enAmount-1
-                    break
+                for index, v in ipairs (enArray) do 
+                    if (v == self) then
+                        table.remove(enArray, index)
+                        enAmount = enAmount-1
+                        break
+                    end
                 end
             end
         end     
+    end
+
+    --colour manager callback
+    local function updateSpeed()
+        if (colourMan.getColourString() == "Blue") then
+            enbulletForce = 0.25 --We decrease enemy bullet speed when blue
+        else
+            enbulletForce = 0.5
+        end
+
+        if (colourMan.getColourString() == "Cyan") then
+            enMoveSpeed = 4000 --We decrease enemy move speed when cyan
+        else
+            enMoveSpeed = 2000
+        end
     end
 
     local function enemies_SpawnCommon(variant)
@@ -136,8 +165,10 @@
     end
     
     function enemyFuncs.Setup()
+        enbulletForce = 0.5
         enemies_RemoveAll()
         enemies_SpawnAll()
+        colourMan.addCallback(updateSpeed) --add function to colour manager callbacks, which get called when we get a new colour
     end
     
     function enemyFuncs.Cleanup()
