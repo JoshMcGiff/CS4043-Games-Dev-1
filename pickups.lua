@@ -24,6 +24,7 @@
     }
     
     local pickUpSound = nil
+    local pickUpCallback = nil
 
     local bluePickup = nil
 	local greenPickup = nil
@@ -33,27 +34,94 @@
     local cyanPickup = nil
 
     local pickupDespawnTimerTable = {}
+    local pickupStartTable = {}
 
-    local function changeDisplayColour(colour)
-        if (colour == "bluePickup") then
-            display.setDefault("background", 128/255, 128/255, 255/255)
-        
-        elseif (colour == "greenPickup") then
-            display.setDefault("background", 128/255, 255/255, 128/255)
-        
-        elseif (colour == "redPickup") then
-            display.setDefault("background", 255/255, 128/255, 128/255)
-        
-        elseif (colour == "yellowPickup") then
-            display.setDefault("background", 255/255, 255/255, 128/255)
-        
-        elseif (colour == "magentaPickup") then
-            display.setDefault("background", 255/255, 128/255, 255/255)
-        
-        elseif (colour == "cyanPickup") then
-            display.setDefault("background", 128/255, 255/255, 255/255)
+    -- THESE ARE FOR PICKUPS SPAWNING IN A RING AT START OF GAME --
+    local function pickupStart_RemoveAll()
+        for i,v in ipairs(pickupStartTable) do
+            displayMan.remove(v)
+            v = nil
         end
+        pickupStartTable = {}
     end
+
+    local function pickupStartCollisions(self, event)
+        if event.phase == "began" and event.other.myName == "player" then
+            audio.stop() --stop previous audio
+            audio.play(soundTable[self.myName], {loops= -1, fadein = 500})
+            timer.performWithDelay(50, function() colourMan.setCommonColour(colourTable[self.myName], true) end)
+            timer.performWithDelay(50, pickupStart_RemoveAll, 1)
+            
+            if (not (pickUpCallback == nil)) and type(pickUpCallback) == "function" then
+                timer.performWithDelay(50, function() pickUpCallback() end) --start spawning enemies, more pickups, etc
+            end
+		end
+    end
+
+    local function pickupStartSpawnCommon(pickup)
+        pickup.isVisible = true
+		physics.addBody(pickup, "static", {filter=pickupCollisionFilter})
+
+        pickup.collision = pickupStartCollisions
+        pickup:addEventListener("collision")
+        table.insert(pickupStartTable, pickup)
+    end
+
+    local function spawnStartBlue()
+        bluePickup = displayMan.newRandomImageRect("Resources/Gfx/blue.png", 50, 50)
+        local x = display.contentCenterX
+        local y = display.contentCenterY - (display.contentCenterY * 0.25)
+        displayMan.move(bluePickup,x,y)
+        bluePickup.myName = "bluePickup"
+        pickupStartSpawnCommon(bluePickup)
+    end
+    
+    local function spawnStartGreen()
+        greenPickup = displayMan.newRandomImageRect("Resources/Gfx/green.png", 50, 50)
+        local x = display.contentCenterX
+        local y = display.contentCenterY + (display.contentCenterY * 0.25)
+        displayMan.move(greenPickup,x,y)
+        greenPickup.myName = "greenPickup"
+        pickupStartSpawnCommon(greenPickup)
+    end
+
+    local function spawnStartRed()
+        redPickup = displayMan.newRandomImageRect("Resources/Gfx/red.png", 50, 50)
+        local x = display.contentCenterX - (display.contentCenterY * 0.22)
+        local y = display.contentCenterY - (display.contentCenterY * 0.10)
+        displayMan.move(redPickup,x,y)
+        redPickup.myName = "redPickup"
+		pickupStartSpawnCommon(redPickup)
+    end
+
+    local function spawnStartMagenta()
+        magentaPickup = displayMan.newRandomImageRect("Resources/Gfx/magenta.png", 50, 50)
+        local x = display.contentCenterX + (display.contentCenterY * 0.22)
+        local y = display.contentCenterY - (display.contentCenterY * 0.10)
+        displayMan.move(magentaPickup,x,y)
+        magentaPickup.myName = "magentaPickup"
+        pickupStartSpawnCommon(magentaPickup)
+    end
+
+    local function spawnStartYellow()
+        yellowPickup = displayMan.newRandomImageRect("Resources/Gfx/yellow.png", 50, 50)
+        local x = display.contentCenterX - (display.contentCenterY * 0.22)
+        local y = display.contentCenterY + (display.contentCenterY * 0.10)
+        displayMan.move(yellowPickup,x,y)
+        yellowPickup.myName = "yellowPickup"
+        pickupStartSpawnCommon(yellowPickup)
+    end
+    
+    local function spawnStartCyan()
+        cyanPickup = displayMan.newRandomImageRect("Resources/Gfx/cyan.png", 50, 50)
+        local x = display.contentCenterX + (display.contentCenterY * 0.22)
+        local y = display.contentCenterY + (display.contentCenterY * 0.10)
+        displayMan.move(cyanPickup,x,y)
+        cyanPickup.myName = "cyanPickup"
+        pickupStartSpawnCommon(cyanPickup)
+    end
+
+    -- THESE ARE FOR PICKUPS SPAWNING RANDOMLY IN THE GAME --
 
     local function pickupCollisions(self, event)
         if event.phase == "began" and event.other.myName == "player" then
@@ -63,7 +131,6 @@
             audio.play(soundTable[self.myName], {loops= -1, fadein = 500})
             --timer needed as cant change collisions in collision event
             timer.performWithDelay(50, function() colourMan.setCommonColour(colourTable[self.myName], true) end)
-            changeDisplayColour(self.myName)
 			displayMan.remove(self)
 		end
     end
@@ -80,54 +147,6 @@
             table.remove(pickupDespawnTimerTable, 0) 
         end)
         table.insert(pickupDespawnTimerTable, timer)
-    end
-
-    local function spawnStartBlue()
-        bluePickup = displayMan.newRandomImageRect("Resources/Gfx/blue.png", 50, 50)
-        bluePickup.x = display.contentCenterX
-        bluePickup.y = display.contentCenterY - (display.contentCenterY * 0.25)
-        bluePickup.myName = "bluePickup"
-        pickupSpawnCommon(bluePickup)
-    end
-    
-    local function spawnStartGreen()
-        greenPickup = displayMan.newRandomImageRect("Resources/Gfx/green.png", 50, 50)
-        greenPickup.x = display.contentCenterX
-        greenPickup.y = display.contentCenterY + (display.contentCenterY * 0.25)
-        greenPickup.myName = "greenPickup"
-        pickupSpawnCommon(greenPickup)
-    end
-
-    local function spawnStartRed()
-        redPickup = displayMan.newRandomImageRect("Resources/Gfx/red.png", 50, 50)
-        redPickup.x = display.contentCenterX - (display.contentCenterY * 0.18)
-        redPickup.y = display.contentCenterY - (display.contentCenterY * 0.10)
-        redPickup.myName = "redPickup"
-		pickupSpawnCommon(redPickup)
-    end
-
-    local function spawnStartMagenta()
-        magentaPickup = displayMan.newRandomImageRect("Resources/Gfx/magenta.png", 50, 50)
-        magentaPickup.x = display.contentCenterX + (display.contentCenterY * 0.18)
-        magentaPickup.y = display.contentCenterY - (display.contentCenterY * 0.10)
-        magentaPickup.myName = "magentaPickup"
-        pickupSpawnCommon(magentaPickup)
-    end
-
-    local function spawnStartYellow()
-        yellowPickup = displayMan.newRandomImageRect("Resources/Gfx/yellow.png", 50, 50)
-        yellowPickup.x = display.contentCenterX - (display.contentCenterY * 0.18)
-        yellowPickup.y = display.contentCenterY + (display.contentCenterY * 0.10)
-        yellowPickup.myName = "yellowPickup"
-        pickupSpawnCommon(yellowPickup)
-    end
-    
-    local function spawnStartCyan()
-        cyanPickup = displayMan.newRandomImageRect("Resources/Gfx/cyan.png", 50, 50)
-        cyanPickup.x = display.contentCenterX + (display.contentCenterY * 0.18)
-        cyanPickup.y = display.contentCenterY + (display.contentCenterY * 0.10)
-        cyanPickup.myName = "cyanPickup"
-        pickupSpawnCommon(cyanPickup)
     end
     
     local function spawnBlue()
@@ -182,7 +201,7 @@
         end
     end
 
-    function pickupFuncs.Setup()
+    function pickupFuncs.Setup(callback)
         pickUpSound = audio.loadStream("Resources/Audio/switch.wav")
         --Initially Spawn in All 6 colours --
         spawnStartBlue()
@@ -191,6 +210,7 @@
         spawnStartMagenta()
         spawnStartYellow()
         spawnStartCyan()
+        pickUpCallback = callback
     end
 
     function pickupFuncs.Cleanup()

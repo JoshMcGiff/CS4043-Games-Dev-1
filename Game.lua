@@ -14,9 +14,12 @@ local wallCollisionFilter = {categoryBits=32, maskBits=25}  -- Walls collides on
 local pickupSpawnTimer = nil
 local enemySpawnTimer = nil
 local enemyShootTimer = nil
+
 local background = nil
 local clockText = nil
 local countDownTimer = nil
+
+local afterRingSetup = false
 local secondsLeft = nil
 local Wall1 = nil
 local Wall2 = nil
@@ -52,9 +55,15 @@ end
 
 function pauseGame()
     _G.gamePaused = true --set a global value
-    timer.pause(pickupSpawnTimer)
-    timer.pause(enemySpawnTimer)
-    timer.pause(enemyShootTimer)
+    if (not (enemyShootTimer == nil)) then
+        timer.pause(enemyShootTimer)
+    end
+    if (not (enemySpawnTimer == nil)) then
+        timer.pause(enemySpawnTimer)
+    end
+    if (not (pickupSpawnTimer == nil)) then
+        timer.pause(pickupSpawnTimer)
+    end
     pickupFuncs.pause()
     player.pause()
     physics.pause()
@@ -67,9 +76,15 @@ end
 
 function deathGame()
     _G.gamePaused = true --set a global value
-    timer.pause(pickupSpawnTimer)
-    timer.pause(enemySpawnTimer)
-    timer.pause(enemyShootTimer)
+    if (not (enemyShootTimer == nil)) then
+        timer.pause(enemyShootTimer)
+    end
+    if (not (enemySpawnTimer == nil)) then
+        timer.pause(enemySpawnTimer)
+    end
+    if (not (pickupSpawnTimer == nil)) then
+        timer.pause(pickupSpawnTimer)
+    end
     pickupFuncs.pause()
     player.pause()
     physics.pause()
@@ -85,11 +100,56 @@ function deathGame()
     composer.gotoScene("deathScreen", {isModal = true, effect = "fade", time = 300})
 end
 
+function GameScene:resumeGame()
+    Runtime:addEventListener("key", spawn_PauseMenu)
+    audio.resume()
+    physics.start()
+    player.resume()
+    pickupFuncs.resume()
+    if (not (enemyShootTimer == nil)) then
+        timer.resume(enemyShootTimer)
+    end
+    if (not (enemySpawnTimer == nil)) then
+        timer.resume(enemySpawnTimer)
+    end
+    if (not (pickupSpawnTimer == nil)) then
+        timer.resume(pickupSpawnTimer)
+    end
+    _G.gamePaused = false --set a global value
+end
+
+function GameScene:cleanupGame()
+    Runtime:removeEventListener("key", spawn_PauseMenu)
+    Runtime:removeEventListener("key", spawn_DeathScreen)
+    if (not (enemyShootTimer == nil)) then
+        timer.cancel(enemyShootTimer)
+    end
+    if (not (enemySpawnTimer == nil)) then
+        timer.cancel(enemySpawnTimer)
+    end
+    if (not (pickupSpawnTimer == nil)) then
+        timer.cancel(pickupSpawnTimer)
+    end
+    player.Cleanup()
+    obstacleFuncs.Cleanup()
+    enemies.Cleanup()
+    pickupFuncs.Cleanup()
+    displayMan.Cleanup()
+    colourMan.Cleanup()
+    display.remove(Wall1)
+    display.remove(Wall2)
+    display.remove(Wall3)
+    display.remove(Wall4)
+    display.remove(clockText)
+    display.remove(background)
+    afterRingSetup = false
+end
+
 local function updateTime(event)
     secondsLeft = secondsLeft + 1
     local minutes = math.floor( secondsLeft / 60 )
     local seconds = secondsLeft % 60
-    local timeDisplay = string.format( "%02d:%02d", minutes, seconds )
+    local timeDisplay = string.format( "%02d.%02d", minutes, seconds )
     clockText.text = timeDisplay
 end
 
@@ -107,39 +167,17 @@ function updateHealth()
         heart.y = display.contentHeight * 0.05
         table.insert(livesArray, heart)
     end
-
 end
 
-function GameScene:resumeGame()
-    Runtime:addEventListener("key", spawn_PauseMenu)
-    audio.resume()
-    physics.start()
-    player.resume()
-    pickupFuncs.resume()
-    timer.resume(enemyShootTimer)
-    timer.resume(enemySpawnTimer)
-    timer.resume(pickupSpawnTimer)
-    _G.gamePaused = false --set a global value
-end
-
-function GameScene:cleanupGame()
-    Runtime:removeEventListener("key", spawn_PauseMenu)
-    Runtime:removeEventListener("key", spawn_DeathScreen)
-    timer.cancel(pickupSpawnTimer)
-    timer.cancel(enemySpawnTimer)
-    timer.cancel(enemyShootTimer)
-    player.Cleanup()
-    obstacleFuncs.Cleanup()
-    enemies.Cleanup()
-    pickupFuncs.Cleanup()
-    displayMan.Cleanup()
-    colourMan.Cleanup()
-    display.remove(Wall1)
-    display.remove(Wall2)
-    display.remove(Wall3)
-    display.remove(Wall4)
-    display.remove(clockText)
-    display.remove(background)
+local function afterRingPickup()
+    if (afterRingSetup == true) then
+        return
+    end
+    enemies.Setup()
+    enemySpawnTimer = timer.performWithDelay(1000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
+    enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
+    pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
+    afterRingSetup = true
 end
 
 function GameScene:create(event)
@@ -149,7 +187,6 @@ function GameScene:create(event)
     audio.setVolume(0.5)
     audio.play(whiteSound, {loops= -1})
 
-    
     -- wall stuff from enemies file, probably needs to be reworked a bit
     Wall1 = display.newRect(1920,540,10,1080)
     Wall2 = display.newRect(960,0,1920,10)
@@ -166,12 +203,8 @@ function GameScene:create(event)
     physics.addBody(Wall4, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
 
     displayMan.Setup() --should always be done first
-    pickupFuncs.Setup()
-    timer.performWithDelay(10000, 
-        function() enemies.Setup()
-            enemySpawnTimer = timer.performWithDelay(1000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
-            enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
-        end, 1)
+    pickupFuncs.Setup(afterRingPickup)
+    timer.performWithDelay(10000, afterRingPickup, 1)
     obstacleFuncs.Setup()
     player.setupPlayer(updateHealth)
     updateHealth() --call to setup once=
@@ -181,11 +214,10 @@ function GameScene:create(event)
     background:toBack()
     secondsLeft = 0
     colourMan.addCallback(changeBackground)
-    clockText = display.newText( "00:00", display.contentCenterX/5, 80, "Resources/Gfx/GLITCH-Light.otf", 150 )
+    clockText = display.newText( "00.00", display.contentCenterX/5, 80, "Resources/Gfx/Doctor Glitch.otf", 150 )
     clockText:setFillColor( 0, 0, 0 )
 
     countDownTimer = timer.performWithDelay( 1000, updateTime, -1)
-    pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)

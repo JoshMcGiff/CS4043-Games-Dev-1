@@ -10,9 +10,9 @@ function managerFuncs.isPosUsed(row,col,w,h)
     r = math.floor(row) --for some reason obstacles become a float and have a decimal, breaking the array? this is a dirty fix for now
     c = math.floor(col)
     for i = r, (r+h), 1 do
-        if (i < gridHeight) then
+        if (i < gridHeight and i > 0) then
             for j = c, (c+w), 1 do
-                if (j < gridWidth) then
+                if (j < gridWidth and j > 0) then
                     if (displayGrid[i][j] == true) then
                         return true
                     end
@@ -171,8 +171,8 @@ function managerFuncs.move(obj, x, y)
             managerFuncs.setPosUsed(obj.y, obj.x, obj.width, obj.height) --if we cant move, set the original space as used again
         end
 
-        obj.x = obj.x + x
-        obj.y = obj.y + y
+        obj.x = x
+        obj.y = y
     end
 end
 

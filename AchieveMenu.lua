@@ -92,7 +92,8 @@ function AchieveMenuUI:hide( event )
 	if ( phase == "will" ) then
         AchieveGroup.isVisible = false
 
-	elseif ( phase == "did" ) then
+    elseif ( phase == "did" ) then
+        display.remove(AchieveGroup)
 
 	end
 end
