@@ -2,7 +2,7 @@
     local colourMan = require("colourManager")
     
     local playerFuncs = {}
-    local playerCollisionFilter = {categoryBits=1, maskBits=62}  -- Player collides only with 2 (obstacles), 4 (pickups), 8 (enemy bullets), 16 (enemies) and 32 (walls)
+    local playerCollisionFilter = {categoryBits=1, maskBits=126} -- Player collides only with 2 (obstacles), 4 (pickups), 8 (enemy bullets), 16 (enemies) 32 (walls) and 64 (heartPickup)
     local bulletCollisionFilter = {categoryBits=8, maskBits=50}  -- Bullets collides only with 2 (obstacles), 16 (enemies) and 32 (walls)
     local playerGroup = display.newGroup()
     local gameCallback = nil
@@ -13,6 +13,7 @@
     local downPressed = false
     local leftPressed = false
     local rightPressed = false
+    local moveAmount = 8 --This is player speed
 
     --Player Directional Bullets: 0 = not shot, 1 = waiting to get shot, 2 = has been shot and waiting for key to be released
     local bulletForce = 1.5 --bullet force ('speed') scale
@@ -49,12 +50,17 @@
 
     --Common function that sets up and spawns player bullet
     local function player_bulletCommon(xForce, yForce)
-        local bullet = display.newCircle(playerFuncs.getX(), playerFuncs.getY(), 10)
+        rad = 10
+        if (colourMan.getColourString() == "Red") then
+            rad = 20
+        end
+
+        local bullet = display.newCircle(playerFuncs.getX(), playerFuncs.getY(), rad)
         colourMan.updateObjColour(bullet) --make bullet same colour as player and world
 
-        physics.addBody(bullet, "dynamic", {friction=0.5, bounce=1.0, radius=10, filter=bulletCollisionFilter})
+        physics.addBody(bullet, "dynamic", {friction=0.0, bounce=1.0, radius=rad, filter=bulletCollisionFilter})
         bullet.gravityScale = 0
-        bullet.stroke ={ 0, 0, 0 }
+        bullet.stroke = {0,0,0}
         bullet.strokeWidth = 2
         bullet.isBullet = true --needed for better collisions
         bullet:applyForce(xForce, yForce, bullet.x, bullet.y)
@@ -107,10 +113,6 @@
 
             if (playerFuncs.take1Life() == true) then --only true when lives is 0
                 deathGame()
-            end
-
-            if (not (gameCallback == nil)) and type(gameCallback) == "function" then
-                gameCallback()
             end
 
             print("REMOVED A LIFE, LIVES LEFT: " .. playerFuncs.getLives())
@@ -188,7 +190,7 @@
     end
 
     local function player_moveEnterFrame(event)
-        local moveAmount = 8 --This is player speed
+        
         if (upPressed) then
             playerFuncs.setY(player_front.y - moveAmount)
         end
@@ -218,6 +220,12 @@
         else
             bulletDamage = 1.0
         end
+        
+        if (colourMan.getColourString() == "Yellow") then
+            moveAmount = 16 --We increase speed to double speed
+        else
+            moveAmount = 8
+        end
     end
 
     local function setupPlayerCommon(player, vis)
@@ -239,6 +247,7 @@
         leftPressed = false
         rightPressed = false
         bulletDamage = 1.0
+        moveAmount = 8
         lives = playerMaxLives
         gameCallback = callback
         player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 56, 95)
@@ -257,8 +266,6 @@
         Runtime:addEventListener("touch", player_mouseBullet)
         colourMan.addCallback(updateColour) --add function to colour manager callbacks, which get called when we get a new colour
     end
-    
-  
 
     function playerFuncs.setX(x)
         player_front.x = x
@@ -296,11 +303,17 @@
 
     function playerFuncs.take1Life()
         lives = lives-1
+        if (not (gameCallback == nil)) and type(gameCallback) == "function" then
+            gameCallback() --update health UI
+        end
         return (lives == 0) --return out of lives
     end
 
     function playerFuncs.add1Life()
         lives = lives+1
+        if (not (gameCallback == nil)) and type(gameCallback) == "function" then
+            gameCallback() --update health UI
+        end
         return false --return out of lives
     end
 

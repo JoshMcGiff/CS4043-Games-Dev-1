@@ -2,6 +2,7 @@
     local player = require("player")
     local displayMan = require("displayManager")
     local colourMan = require("colourManager")
+    local heartPickup = require("heartPickups")
 
     local enemyFuncs = {}
     local enemyCollisionFilter = {categoryBits=16, maskBits=43}  -- Enemies collide with 1 (player), 2 (obstacles), 8 (bullets), 32 (walls)
@@ -12,6 +13,7 @@
     local enArray = {}
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
     local enMoveSpeed = 2000 --In ms
+    local heartSpawnRate = 20 --This is 1/heartSpawnRate (default is 1/20), rate increases with green
 
     local function getMoveSpeed()
         return enMoveSpeed
@@ -71,7 +73,7 @@
           vecX = vecX / magnitude
           vecY = vecY / magnitude
         end
-
+        
         local bullet = display.newCircle(obj.x, obj.y, 8)
         if obj.myName == "en1" then
             bullet:setFillColor(0,0,0) --make enemy 1 bullets black
@@ -96,8 +98,12 @@
             self.lives = self.lives-player.getBulletDamage()
             event.other.isVisible = false --don't manually remove bullet as player stuff auto removes it using timer
             if self.lives <= 0 then
+                local x,y = self.x, self.y
+                if(math.random(1, heartSpawnRate) == 1) then
+                    timer.performWithDelay(50, function() heartPickup.Spawn(x, y) end)
+                end
                 displayMan.remove(self)
-
+                
                 for index, v in ipairs (enArray) do 
                     if (v == self) then
                         table.remove(enArray, index)
@@ -110,7 +116,7 @@
     end
 
     --colour manager callback
-    local function updateSpeed()
+    local function updaterCallback()
         if (colourMan.getColourString() == "Blue") then
             enbulletForce = 0.25 --We decrease enemy bullet speed when blue
         else
@@ -121,6 +127,12 @@
             enMoveSpeed = 4000 --We decrease enemy move speed when cyan
         else
             enMoveSpeed = 2000
+        end
+
+        if (colourMan.getColourString() == "Green") then
+            heartSpawnRate = 10 --We decrease heart spawn rate when green
+        else
+            heartSpawnRate = 20
         end
     end
 
@@ -166,9 +178,10 @@
     
     function enemyFuncs.Setup()
         enbulletForce = 0.5
+        heartSpawnRate = 20
         enemies_RemoveAll()
         enemies_SpawnAll()
-        colourMan.addCallback(updateSpeed) --add function to colour manager callbacks, which get called when we get a new colour
+        colourMan.addCallback(updaterCallback) --add function to colour manager callbacks, which get called when we get a new colour
     end
     
     function enemyFuncs.Cleanup()
