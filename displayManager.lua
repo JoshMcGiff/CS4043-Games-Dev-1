@@ -10,9 +10,13 @@ function managerFuncs.isPosUsed(row,col,w,h)
     r = math.floor(row) --for some reason obstacles become a float and have a decimal, breaking the array? this is a dirty fix for now
     c = math.floor(col)
     for i = r, (r+h), 1 do
-        for j = c, (c+w), 1 do
-            if (displayGrid[i][j] == true) then
-                return true
+        if (i < gridHeight) then
+            for j = c, (c+w), 1 do
+                if (j < gridWidth) then
+                    if (displayGrid[i][j] == true) then
+                        return true
+                    end
+                end
             end
         end
     end
@@ -102,6 +106,35 @@ function managerFuncs.newRandomImageRect(filename, width, height)
     --we add our own bool to the object to keep track of ones in the grid when wanting to remove later
     obj.isDisplayManaged = true
     obj.myName = fileName
+    obj.x = posX
+    obj.y = posY
+    --anchor = 0.0 means x=0 and y=0 is actually 0,0 on the display, as corona sets x and y as the middle of the rect
+    obj.anchorX = 0.0
+    obj.anchorY = 0.0
+    return obj
+end
+
+function managerFuncs.newRandomPolygon(vertices)
+    local width, height = 0,0
+
+    for i,v in ipairs(vertices) do
+        if math.mod(i,2) == 0 then --y coords
+            if math.abs(v) > height then
+                height = math.abs(v)
+            end
+        else --x coords
+            if math.abs(v) > width then
+                width = math.abs(v)
+            end
+        end
+    end
+
+    print(string.format("W: %d, H: %d", width, height))
+
+    local posX, posY = managerFuncs.getRandomLocation(width, height)
+    local obj = display.newPolygon(posX, posY, vertices)
+    --we add our own bool to the object to keep track of ones in the grid when wanting to remove later
+    obj.isDisplayManaged = true
     obj.x = posX
     obj.y = posY
     --anchor = 0.0 means x=0 and y=0 is actually 0,0 on the display, as corona sets x and y as the middle of the rect

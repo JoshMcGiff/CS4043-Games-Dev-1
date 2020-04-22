@@ -2,9 +2,11 @@
     local colourMan = require("colourManager")
     
     local playerFuncs = {}
-    local playerCollisionFilter = {categoryBits=1, maskBits=38}  -- Player collides only with 2 (obstacles), 4 (pickups) and 32 (walls)
+    local playerCollisionFilter = {categoryBits=1, maskBits=62}  -- Player collides only with 2 (obstacles), 4 (pickups), 8 (enemy bullets), 16 (enemies) and 32 (walls)
     local bulletCollisionFilter = {categoryBits=8, maskBits=50}  -- Bullets collides only with 2 (obstacles), 16 (enemies) and 32 (walls)
     local playerGroup = display.newGroup()
+    local gameCallback = nil
+    local hit_enBullet, hit_en1, hit_en2, hit_en3 = false, false, false, false
 
     --Player Movement
     local upPressed = false
@@ -24,7 +26,8 @@
     local player_back = nil
     local player_left = nil
     local player_right = nil
-    local lives = 3
+    local playerMaxLives = 3
+    local lives = playerMaxLives
 
     local function updateImage(curImage)
         player_front.isVisible = false
@@ -50,6 +53,8 @@
 
         physics.addBody(bullet, "dynamic", {friction=0.5, bounce=1.0, radius=10, filter=bulletCollisionFilter})
         bullet.gravityScale = 0
+        bullet.stroke ={ 0, 0, 0 }
+        bullet.strokeWidth = 2
         bullet.isBullet = true --needed for better collisions
         bullet:applyForce(xForce, yForce, bullet.x, bullet.y)
         bullet.myName = "bullet"
@@ -76,6 +81,38 @@
             end
         end
         return true  -- Prevents tap/touch propagation to underlying objects
+    end
+
+    local function playerCollisions(self, event)
+        local invincibility = 3000
+        if event.phase == "began" then
+            if (event.other.myName == "enBullet" and hit_enBullet == false) then
+                hit_enBullet = true
+                display.remove(event.other)
+                timer.performWithDelay(1000, function() hit_enBullet = false end)
+            elseif (event.other.myName == "en1" and hit_en1 == false) then
+                hit_en1 = true
+                timer.performWithDelay(invincibility, function() hit_en1 = false end)
+            elseif (event.other.myName == "en2" and hit_en2 == false) then
+                hit_en2 = true
+                timer.performWithDelay(invincibility, function() hit_en2 = false end)
+            elseif (event.other.myName == "en3" and hit_en3 == false) then
+                hit_en3 = true
+                timer.performWithDelay(invincibility, function() hit_en3 = false end)
+            else
+                return
+            end
+
+            if (playerFuncs.take1Life() == true) then --only true when lives is 0
+                deathGame()
+            end
+
+            if (not (gameCallback == nil)) and type(gameCallback) == "function" then
+                gameCallback()
+            end
+
+            print("REMOVED A LIFE, LIVES LEFT: " .. playerFuncs.getLives())
+        end
     end
 
     local function player_DirectionalBullet(event)
@@ -181,12 +218,20 @@
         player.isVisible = vis
         player:setFillColor(1,1,1)
         player.myName = "player"
-        physics.addBody(player, "dynamic", {filter=playerCollisionFilter})
+        physics.addBody(player, "dynamic", {friction=0.0, filter=playerCollisionFilter})
         player.isFixedRotation = true
         player.gravityScale = 0
+        player.collision = playerCollisions
+        player:addEventListener("collision", player)
     end
 
-    function playerFuncs.setupPlayer()
+    function playerFuncs.setupPlayer(callback)
+        upPressed=false
+        downPressed=false
+        leftPressed=false
+        rightPressed=false
+        lives = playerMaxLives
+        gameCallback = callback
         player_front = display.newImageRect(playerGroup, "Resources/Gfx/player_front.png", 56, 95)
         player_back = display.newImageRect(playerGroup, "Resources/Gfx/player_back.png", 56, 95)
         player_left = display.newImageRect(playerGroup, "Resources/Gfx/player_left.png", 43, 95)
@@ -203,6 +248,8 @@
         Runtime:addEventListener("touch", player_mouseBullet)
         colourMan.addCallback(updateColour)
     end
+    
+  
 
     function playerFuncs.setX(x)
         player_front.x = x
@@ -226,13 +273,26 @@
         return player_front.y
     end
 
+    function playerFuncs.getObj()
+        return player_front
+    end
+
     function playerFuncs.getLives()
         return lives
+    end
+
+    function playerFuncs.getMaxLives()
+        return playerMaxLives
     end
 
     function playerFuncs.take1Life()
         lives = lives-1
         return (lives == 0) --return out of lives
+    end
+
+    function playerFuncs.add1Life()
+        lives = lives+1
+        return false --return out of lives
     end
 
     function playerFuncs.pause()

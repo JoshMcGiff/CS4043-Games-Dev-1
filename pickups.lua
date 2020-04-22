@@ -7,10 +7,10 @@
 
     local soundTable = {
         ["bluePickup"] = audio.loadStream("Resources/Audio/Blue.wav"),
-	    ["greenPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
+	    ["greenPickup"] = audio.loadStream("Resources/Audio/Green.wav"),
 	    ["redPickup"] = audio.loadStream("Resources/Audio/Red.wav"),
 	    ["yellowPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
-	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
+	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Magenta.wav"),
         ["cyanPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
     }
 

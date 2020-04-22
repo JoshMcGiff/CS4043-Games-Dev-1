@@ -11,25 +11,43 @@
     local enArray = {}
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
 
-    local function createEn1()
+    local function createEn1() -- Stationary beech
         local width, height = 50, 50
         local en = displayMan.newRandomRect(width, height)
         en:setFillColor(0,0,0) --make enemy black
-        physics.addBody(en, "static", {density = 1.0, friction = 0.5, bounce = 0.8, filter=enemyCollisionFilter})
+        physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         en.myName = "en1"
         return en
     end
 
-    local function createEn2()
-        return createEn1() --for now
+    local function createEn2() -- Suicide Bomber Beech (white Ghost thingz)
+        local width, height = 30, 30
+        local en = displayMan.newRandomRect(width, height)
+        en:setFillColor(1,1,1) --make enemy white
+        physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
+        en.myName = "en2"
+        timer.performWithDelay(5000, function() 
+            transition.to(en, {time=2000, alpha=1.0, transition=easing.outQuint, x=player.getX(), y=player.getY()} ) 
+        end, -1)        
+        
+        return en
     end
 
-    local function createEn3()
-        return createEn1() --for now
+    local function createEn3() -- Depression Demonz (triangle ones)        
+        local vertices = {0,-110, 27,-35, -27,-35}
+        
+        local en = displayMan.newRandomPolygon(vertices)
+        en.fill = { type="image", filename="Resources/Gfx/lava.png" }
+        physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
+        timer.performWithDelay(4000, function() 
+            transition.to(en, {time=2000, alpha=1.0, transition=easing.inOutCirc, x=player.getX(), y=player.getY()} ) 
+        end, -1)
+        en.myName = "en3"
+        return en
     end
 
     local function shootAtPlayer(obj)
-        if obj == nil or obj.isVisible == false then
+        if obj == nil or obj.isVisible == false or obj.myName == "en3" then --enemy 3 cant shoot
             return
         end
 
@@ -44,17 +62,24 @@
         end
 
         local bullet = display.newCircle(obj.x, obj.y, 8)
-        bullet:setFillColor(0,0,0) --make enemy bullets black
-
-        physics.addBody(bullet, "dynamic", {friction=0.5, bounce=1.0, radius=8, filter=enbulletCollisionFilter})
+        if obj.myName == "en1" then
+            bullet:setFillColor(0,0,0) --make enemy 1 bullets black
+            bullet.stroke ={1,1,1}
+        elseif obj.myName == "en2" then
+            bullet:setFillColor(1,1,1) --make enemy 2 bullets white
+            bullet.stroke ={0,0,0}
+        end
+        
+        bullet.strokeWidth = 2
+        physics.addBody(bullet, "dynamic", {friction=0.0, bounce=1.0, radius=8, filter=enbulletCollisionFilter})
         bullet.gravityScale = 0
         bullet.isBullet = true --needed for better collisions
         bullet:applyForce(vecX*enbulletForce, vecY*enbulletForce, bullet.x, bullet.y)
         bullet.myName = "enBullet"
-
-        timer.performWithDelay(10000, function() display.remove(bullet) end) --remove bullet 10 seconds after shooting
+        
+        timer.performWithDelay(4000, function() display.remove(bullet) end) --remove bullet 4 seconds after shooting
     end
-
+    
     local function enemyCollisions(self, event)
         if event.phase == "began" and (event.other.myName == "bullet") then --player bullet, not enemies own bullet
             displayMan.remove(self)
@@ -67,7 +92,7 @@
                     break
                 end
             end
-		end
+        end     
     end
 
     local function enemies_SpawnCommon(variant)
@@ -80,13 +105,11 @@
             en = createEn3()
         end
 
-        --if (not (el == nil)) then
-            en.collision = enemyCollisions
-            en:addEventListener("collision")
+        en.collision = enemyCollisions
+        en:addEventListener("collision")
 
-            enArray[enAmount] = en
-            enAmount = enAmount+1
-        --end
+        enArray[enAmount] = en
+        enAmount = enAmount+1
     end
     
     function enemyFuncs.SpawnRandom()

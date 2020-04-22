@@ -15,10 +15,15 @@ local pickupSpawnTimer = nil
 local enemySpawnTimer = nil
 local enemyShootTimer = nil
 
+local clockText = nil
+local countDownTimer = nil
+local secondsLeft = nil
 local Wall1 = nil
 local Wall2 = nil
 local Wall3 = nil
 local Wall4 = nil
+
+local livesArray = {}
 
 local function gameLoop()
 
@@ -33,6 +38,14 @@ local function spawn_PauseMenu(event)
     end
 end
 
+local function spawn_DeathScreen(event)
+    if (event.phase == "down") then
+        if (event.keyName == "0") then
+            deathGame()
+        end
+    end
+end
+
 function pauseGame()
     _G.gamePaused = true --set a global value
     timer.pause(pickupSpawnTimer)
@@ -42,12 +55,59 @@ function pauseGame()
     player.pause()
     physics.pause()
     audio.pause()
+    Runtime:removeEventListener("key", spawn_PauseMenu)
     
     --Show pause screen
     composer.showOverlay("pauseScreen", {isModal = true, effect = "fade", time = 300})
 end
 
+function deathGame()
+    _G.gamePaused = true --set a global value
+    timer.pause(pickupSpawnTimer)
+    timer.pause(enemySpawnTimer)
+    timer.pause(enemyShootTimer)
+    pickupFuncs.pause()
+    player.pause()
+    physics.pause()
+    audio.pause()
+
+    for i,v in ipairs(livesArray) do
+        display.remove(v)
+        v = nil
+    end
+    livesArray = {}
+    
+    --Show pause screen
+    composer.gotoScene("deathScreen", {isModal = true, effect = "fade", time = 300})
+end
+
+local function updateTime(event)
+    secondsLeft = secondsLeft + 1
+    local minutes = math.floor( secondsLeft / 60 )
+    local seconds = secondsLeft % 60
+    local timeDisplay = string.format( "%02d:%02d", minutes, seconds )
+    clockText.text = timeDisplay
+end
+
+function updateHealth()
+    for i,v in ipairs(livesArray) do
+        display.remove(v)
+        v = nil
+    end
+
+    livesArray = {} --reset hearts array
+    --for i=1,player.getMaxLives() do
+    for i=1,player.getLives() do
+        local heart = display.newImageRect("Resources/Gfx/heart.png", 100, 100)
+        heart.x = display.contentWidth * (1.00 - (0.05*i))
+        heart.y = display.contentHeight * 0.05
+        table.insert(livesArray, heart)
+    end
+
+end
+
 function GameScene:resumeGame()
+    Runtime:addEventListener("key", spawn_PauseMenu)
     audio.resume()
     physics.start()
     player.resume()
@@ -59,6 +119,8 @@ function GameScene:resumeGame()
 end
 
 function GameScene:cleanupGame()
+    Runtime:removeEventListener("key", spawn_PauseMenu)
+    Runtime:removeEventListener("key", spawn_DeathScreen)
     timer.cancel(pickupSpawnTimer)
     timer.cancel(enemySpawnTimer)
     timer.cancel(enemyShootTimer)
@@ -72,9 +134,11 @@ function GameScene:cleanupGame()
     display.remove(Wall2)
     display.remove(Wall3)
     display.remove(Wall4)
+    display.remove(clockText)
 end
 
 function GameScene:create(event)
+    composer.removeScene("deathScreen")
     audio.stop()
     local whiteSound = audio.loadStream("Resources/Audio/2sh.wav")
     audio.setVolume(0.5)
@@ -100,15 +164,21 @@ function GameScene:create(event)
     pickupFuncs.Setup()
     enemies.Setup()
     obstacleFuncs.Setup()
-    player.setupPlayer()
+    player.setupPlayer(updateHealth)
+    updateHealth() --call to setup once
 
+    secondsLeft = 0
+    clockText = display.newText( "00:00", display.contentCenterX/5, 80, "Resources/Gfx/GLITCH-Light.otf", 150 )
+    clockText:setFillColor( 0, 0, 0 )
 
+    countDownTimer = timer.performWithDelay( 1000, updateTime, -1)
     pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
-    enemySpawnTimer = timer.performWithDelay(8000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 seconds
-    enemyShootTimer = timer.performWithDelay(5000, function() enemies.allShoot() end, -1) --every 5 seconds make all enemies shoot at player 
+    enemySpawnTimer = timer.performWithDelay(1000, function() enemies.SpawnRandom() end, -1) --spawn enemy every 8 secondswww
+    enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)
+    Runtime:addEventListener("key", spawn_DeathScreen)
 end
     
 -- show()
