@@ -41,7 +41,6 @@
     local function pickupStart_RemoveAll()
         for i,v in ipairs(pickupStartTable) do
             v.isVisible = false
-            physics.removeBody(v)
             displayMan.remove(v)
             v = nil
         end
