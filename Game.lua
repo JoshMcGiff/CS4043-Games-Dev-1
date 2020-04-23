@@ -20,7 +20,7 @@ local clockText = nil
 local countDownTimer = nil
 
 local afterRingSetup = false
-local secondsLeft = nil
+local secondsLeft = 0
 local Wall1 = nil
 local Wall2 = nil
 local Wall3 = nil
@@ -74,6 +74,24 @@ function pauseGame()
 end
 
 function deathGame()
+
+    --Remove UI before screenshot
+    display.remove(clockText)
+    for i,v in ipairs(livesArray) do
+        display.remove(v)
+        v = nil
+    end
+    livesArray = {}
+
+    --Take a screenshot of game for death background
+    screenCap = display.captureScreen()
+    screenCap.isVisible = false
+    screenCap.x, screenCap.y = display.contentCenterX, display.contentCenterY
+    screenCap.fill.effect = "filter.blurGaussian"
+    screenCap.fill.effect.horizontal.blurSize = 28
+    screenCap.fill.effect.vertical.blurSize = 28
+
+
     if (not (enemyShootTimer == nil)) then
         timer.pause(enemyShootTimer)
     end
@@ -87,15 +105,9 @@ function deathGame()
     player.pause()
     physics.pause()
     audio.pause()
-
-    for i,v in ipairs(livesArray) do
-        display.remove(v)
-        v = nil
-    end
-    livesArray = {}
     
     --goto death screen
-    composer.gotoScene("deathScreen", {effect = "fade", time = 300})
+    composer.gotoScene("deathScreen", {effect = "fade", time = 300, params = {screenshot=screenCap, score=secondsLeft}})
 end
 
 function GameScene:resumeGame()
@@ -137,7 +149,6 @@ function GameScene:cleanupGame()
     display.remove(Wall2)
     display.remove(Wall3)
     display.remove(Wall4)
-    display.remove(clockText)
     display.remove(background)
 end
 

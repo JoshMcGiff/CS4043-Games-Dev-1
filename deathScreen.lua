@@ -2,14 +2,14 @@ local widget = require("widget")
 local composer = require("composer")
 local deathUI = composer.newScene()
 local pauseGroup = nil
-local backBtnDistance = 70
 
 local btnRestartGame = nil
 local btnMainMenu = nil
 local btnQuitGame = nil
 local screenCap = nil
-
-local resuming = false
+local secondsSurvivied = 0
+local scoreText = nil
+local gameOverText = nil
 
 local function spawnMainMenu()
     composer.hideOverlay("fade", 300)
@@ -26,12 +26,21 @@ end
 
 function deathUI:create(event)
     pauseGroup = display.newGroup()
+    local params = event.params
 
-    screenCap = display.captureScreen()
-    screenCap.x, screenCap.y = display.contentCenterX, display.contentCenterY
-    screenCap.fill.effect = "filter.blurGaussian"
-    screenCap.fill.effect.horizontal.blurSize = 15
-    screenCap.fill.effect.vertical.blurSize = 15
+    if params then
+        screenCap = params.screenshot
+        screenCap.isVisible = true
+        secondsSurvivied = params.score
+    end
+
+    local minutes = math.floor(secondsSurvivied / 60)
+    local seconds = secondsSurvivied % 60
+    scoreText = display.newText(string.format("   Time\n  %02d.%02d", minutes, seconds), display.contentCenterX, display.contentHeight/2.3, "Resources/Gfx/Doctor Glitch.otf", 80)
+    scoreText:setFillColor(0,0,0)
+    
+    gameOverText = display.newText("GAME OVER!", display.contentCenterX, display.contentHeight/4, "Resources/Gfx/Doctor Glitch.otf", 80)
+    gameOverText:setFillColor(0,0,0)
 
     btnRestartGame = widget.newButton({
         parent = self.view,
@@ -68,6 +77,8 @@ function deathUI:create(event)
     })
 
     pauseGroup:insert(screenCap)
+    pauseGroup:insert(scoreText)
+    pauseGroup:insert(gameOverText)
     pauseGroup:insert(btnRestartGame)
     pauseGroup:insert(btnMainMenu)
 end
@@ -96,15 +107,13 @@ function deathUI:hide( event )
         pauseGroup.isVisible = false
         display.remove(btnRestartGame)
         display.remove(btnMainMenu)
+        display.remove(scoreText)
+        display.remove(gameOverText)
         display.remove(screenCap)
-        screenCap, btnRestartGame, btnMainMenu = nil, nil, nil
-
-        if resuming == true then
-            event.parent:restartGame()
-        end
+        screenCap, scoreText, gameOverText, btnRestartGame, btnMainMenu = nil, nil, nil, nil, nil
+        secondsSurvivied = 0        
 
 	elseif (phase == "did") then
-        resuming = false
 	end
 end
 
