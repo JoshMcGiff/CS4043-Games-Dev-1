@@ -11,6 +11,7 @@
     local maxEnAmount = 12
     local enAmount = 0
     local enArray = {}
+    local enBulletArray = {}
     local enbulletForce = 0.5 --bullet force ('speed') scale, make it small bit slower than player
     local enMoveSpeed = 2000 --In ms
     local heartSpawnRate = 20 --This is 1/heartSpawnRate (default is 1/20), rate increases with green
@@ -90,6 +91,7 @@
         bullet:applyForce(vecX*enbulletForce, vecY*enbulletForce, bullet.x, bullet.y)
         bullet.myName = "enBullet"
         
+        table.insert(enBulletArray, bullet)
         timer.performWithDelay(4000, function() display.remove(bullet) end) --remove bullet 4 seconds after shooting
     end
     
@@ -186,6 +188,12 @@
     
     function enemyFuncs.Cleanup()
         enemies_RemoveAll()
+        for i,v in ipairs (enBulletArray) do
+            v.isVisible = false
+            display.remove(v)  
+            v = nil
+        end
+        enBulletArray = {}
     end
 
     function enemyFuncs.allShoot()

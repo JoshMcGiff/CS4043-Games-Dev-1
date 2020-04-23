@@ -54,7 +54,6 @@ local function spawn_DeathScreen(event)
 end
 
 function pauseGame()
-    _G.gamePaused = true --set a global value
     if (not (enemyShootTimer == nil)) then
         timer.pause(enemyShootTimer)
     end
@@ -75,7 +74,6 @@ function pauseGame()
 end
 
 function deathGame()
-    _G.gamePaused = true --set a global value
     if (not (enemyShootTimer == nil)) then
         timer.pause(enemyShootTimer)
     end
@@ -96,8 +94,8 @@ function deathGame()
     end
     livesArray = {}
     
-    --Show pause screen
-    composer.gotoScene("deathScreen", {isModal = true, effect = "fade", time = 300})
+    --goto death screen
+    composer.gotoScene("deathScreen", {effect = "fade", time = 300})
 end
 
 function GameScene:resumeGame()
@@ -115,7 +113,6 @@ function GameScene:resumeGame()
     if (not (pickupSpawnTimer == nil)) then
         timer.resume(pickupSpawnTimer)
     end
-    _G.gamePaused = false --set a global value
 end
 
 function GameScene:cleanupGame()
@@ -142,7 +139,6 @@ function GameScene:cleanupGame()
     display.remove(Wall4)
     display.remove(clockText)
     display.remove(background)
-    afterRingSetup = false
 end
 
 local function updateTime(event)
@@ -203,21 +199,21 @@ function GameScene:create(event)
     physics.addBody(Wall4, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
 
     displayMan.Setup() --should always be done first
-    pickupFuncs.Setup(afterRingPickup)
-    timer.performWithDelay(10000, afterRingPickup, 1)
+    pickupFuncs.Setup(afterRingPickup) --'afterRingPickup' is called after player picks an initial colour
+    afterRingSetup = false
     obstacleFuncs.Setup()
     player.setupPlayer(updateHealth)
-    updateHealth() --call to setup once=
-    background = display.newImageRect( "Resources/Gfx/background.jpg", 1920, 1080 )
+    updateHealth() --call to setup gfx once
+    background = display.newImageRect("Resources/Gfx/background.jpg", display.contentWidth, display.contentHeight)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
     background:toBack()
     secondsLeft = 0
     colourMan.addCallback(changeBackground)
-    clockText = display.newText( "00.00", display.contentCenterX/5, 80, "Resources/Gfx/Doctor Glitch.otf", 150 )
-    clockText:setFillColor( 0, 0, 0 )
+    clockText = display.newText("00.00", display.contentCenterX/5, 80, "Resources/Gfx/Doctor Glitch.otf", 150)
+    clockText:setFillColor(0,0,0)
 
-    countDownTimer = timer.performWithDelay( 1000, updateTime, -1)
+    countDownTimer = timer.performWithDelay(1000, updateTime, -1) --update clock every second
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)

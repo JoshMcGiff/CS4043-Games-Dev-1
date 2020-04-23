@@ -16,12 +16,13 @@
     local moveAmount = 8 --This is player speed
 
     --Player Directional Bullets: 0 = not shot, 1 = waiting to get shot, 2 = has been shot and waiting for key to be released
-    local bulletForce = 1.5 --bullet force ('speed') scale
-    local bulletDamage = 1.0
     local upBullet = 0
     local downBullet = 0
     local leftBullet = 0
     local rightBullet = 0
+    local bulletForce = 1.5 --bullet force ('speed') scale
+    local bulletDamage = 1.0
+    local bulletArray = {}
 
     local bulletMaxCountdown = 500
     local bulletSkipCountdown = false
@@ -74,6 +75,7 @@
         bullet.isBullet = true --needed for better collisions
         bullet:applyForce(xForce, yForce, bullet.x, bullet.y)
         bullet.myName = "bullet"
+        table.insert(bulletArray, bullet)
 
         timer.performWithDelay(5000, function() display.remove(bullet) end) --remove bullet 5 seconds after shooting
     end
@@ -367,6 +369,12 @@
         display.remove(player_back)
         display.remove(player_left)
         display.remove(player_right)
+        for i,v in ipairs (bulletArray) do
+            v.isVisible = false
+            display.remove(v)  
+            v = nil
+        end
+        bulletArray = {}
     end
 
 

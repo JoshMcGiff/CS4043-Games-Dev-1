@@ -35,10 +35,13 @@
 
     local pickupDespawnTimerTable = {}
     local pickupStartTable = {}
+    local pickupTable = {}
 
     -- THESE ARE FOR PICKUPS SPAWNING IN A RING AT START OF GAME --
     local function pickupStart_RemoveAll()
         for i,v in ipairs(pickupStartTable) do
+            v.isVisible = false
+            physics.removeBody(v)
             displayMan.remove(v)
             v = nil
         end
@@ -53,7 +56,7 @@
             timer.performWithDelay(50, pickupStart_RemoveAll, 1)
             
             if (not (pickUpCallback == nil)) and type(pickUpCallback) == "function" then
-                timer.performWithDelay(50, function() pickUpCallback() end) --start spawning enemies, more pickups, etc
+                timer.performWithDelay(50, pickUpCallback, 1) --start spawning enemies, more pickups, etc
             end
 		end
     end
@@ -143,10 +146,12 @@
         pickup:addEventListener("collision")
 
         local timer = timer.performWithDelay(10000, function() 
+            pickup.isVisible = false
             displayMan.remove(pickup)
             table.remove(pickupDespawnTimerTable, 0) 
         end)
         table.insert(pickupDespawnTimerTable, timer)
+        table.insert(pickupTable, pickup)
     end
     
     local function spawnBlue()
@@ -232,9 +237,15 @@
         for i,v in ipairs (pickupDespawnTimerTable) do
             timer.cancel(v)
             v = nil
-            table.remove(pickupDespawnTimerTable, i)
         end
         pickupDespawnTimerTable = {}
+        
+        for i,v in ipairs (pickupTable) do
+            v.isVisible = false
+            displayMan.remove(v)  
+            v = nil
+        end
+        pickupTable = {}
     end
 
     function pickupFuncs.pause()
