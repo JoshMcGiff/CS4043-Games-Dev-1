@@ -9,9 +9,9 @@
         ["bluePickup"] = audio.loadStream("Resources/Audio/Blue.wav"),
 	    ["greenPickup"] = audio.loadStream("Resources/Audio/Green.wav"),
 	    ["redPickup"] = audio.loadStream("Resources/Audio/Red.wav"),
-	    ["yellowPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
+	    ["yellowPickup"] = audio.loadStream("Resources/Audio/Yellow.wav"),
 	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Magenta.wav"),
-        ["cyanPickup"] = audio.loadStream("Resources/Audio/Requiem.mp3"),
+        ["cyanPickup"] = audio.loadStream("Resources/Audio/Cyan.wav"),
     }
 
     local colourTable = {

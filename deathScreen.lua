@@ -13,7 +13,7 @@ local gameOverText = nil
 
 local function spawnMainMenu()
     composer.hideOverlay("fade", 300)
-    local new = audio.loadStream("Resources/audio/missu.wav")
+    local new = audio.loadStream("Resources/audio/menu.wav")
     audio.setVolume(0.5)
     audio.play(new, {loops= -1})
     composer.gotoScene("MainMenu", { time=500, effect="crossFade" } )

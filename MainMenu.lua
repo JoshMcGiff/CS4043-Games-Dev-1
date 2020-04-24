@@ -22,7 +22,7 @@ local function quitApp()
 end
 
 function MainMenuUI:create(event)
-    local new = audio.loadStream("Resources/audio/missu.wav")
+    local new = audio.loadStream("Resources/audio/menu.wav")
     audio.setVolume(0.5)
     audio.play(new, {loops= -1})
     buttonGroup = display.newGroup()
