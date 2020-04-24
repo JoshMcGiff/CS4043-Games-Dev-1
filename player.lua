@@ -33,7 +33,7 @@
     local player_back = nil
     local player_left = nil
     local player_right = nil
-    local playerMaxLives = 3
+    local playerMaxLives = 300
     local lives = playerMaxLives
 
     local function updateImage(curImage)
@@ -106,8 +106,8 @@
         if event.phase == "began" then
             if (event.other.myName == "enBullet" and hit_enBullet == false) then
                 hit_enBullet = true
+                event.other.isVisible = false
                 display.remove(event.other)
-                event.other.isVisible = false --don't manually remove bullet as enemy stuff auto removes it using timer
                 timer.performWithDelay(1000, function() hit_enBullet = false end)
             elseif (event.other.myName == "en1" and hit_en1 == false) then
                 hit_en1 = true
@@ -255,6 +255,7 @@
         player.myName = "player"
         physics.addBody(player, "dynamic", {friction=0.0, filter=playerCollisionFilter})
         player.isFixedRotation = true
+        player.linearDamping = 50 --stop player getting pushed by other things
         player.gravityScale = 0
         player.collision = playerCollisions
         player:addEventListener("collision", player)
