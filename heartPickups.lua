@@ -9,6 +9,7 @@ local heartDespawnTransitionTable = {}
 
 local function heartCollision(self, event)
     if event.phase == "began" and (event.other.myName == "player") then --player
+        self:removeEventListener("collision")
         player.add1Life()
         self.isVisible = false
         timer.performWithDelay(50, function() physics.removeBody(self) end)
