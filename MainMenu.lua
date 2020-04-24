@@ -9,8 +9,15 @@ local btnStart
 local btnAchieve
 local btnQuit
 
+local doneTutorial = false
+
 local function spawnGameMenu()
-    composer.gotoScene( "Game", { time=500, effect="crossFade" } )
+    if doneTutorial == true then
+        composer.gotoScene("Game", {time=500, effect="crossFade"})
+    else
+        doneTutorial = true
+        composer.gotoScene("tutorial", {time=500, effect="crossFade"})
+    end
 end
 
 local function spawnAchieveMenu()
