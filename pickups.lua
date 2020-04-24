@@ -96,7 +96,7 @@
 
     local function spawnStartRed()
         redPickup = displayMan.newRandomImageRect("Resources/Gfx/red.png", 50, 50)
-        local x = display.contentCenterX - (display.contentCenterY * 0.22)
+        local x = display.contentCenterX - (display.contentCenterY * 0.19)
         local y = display.contentCenterY - (display.contentCenterY * 0.10)
         displayMan.move(redPickup,x,y)
         redPickup.myName = "redPickup"
@@ -105,7 +105,7 @@
 
     local function spawnStartMagenta()
         magentaPickup = displayMan.newRandomImageRect("Resources/Gfx/magenta.png", 50, 50)
-        local x = display.contentCenterX + (display.contentCenterY * 0.22)
+        local x = display.contentCenterX + (display.contentCenterY * 0.19)
         local y = display.contentCenterY - (display.contentCenterY * 0.10)
         displayMan.move(magentaPickup,x,y)
         magentaPickup.myName = "magentaPickup"
@@ -114,7 +114,7 @@
 
     local function spawnStartYellow()
         yellowPickup = displayMan.newRandomImageRect("Resources/Gfx/yellow.png", 50, 50)
-        local x = display.contentCenterX - (display.contentCenterY * 0.22)
+        local x = display.contentCenterX - (display.contentCenterY * 0.19)
         local y = display.contentCenterY + (display.contentCenterY * 0.10)
         displayMan.move(yellowPickup,x,y)
         yellowPickup.myName = "yellowPickup"
@@ -123,7 +123,7 @@
     
     local function spawnStartCyan()
         cyanPickup = displayMan.newRandomImageRect("Resources/Gfx/cyan.png", 50, 50)
-        local x = display.contentCenterX + (display.contentCenterY * 0.22)
+        local x = display.contentCenterX + (display.contentCenterY * 0.19)
         local y = display.contentCenterY + (display.contentCenterY * 0.10)
         displayMan.move(cyanPickup,x,y)
         cyanPickup.myName = "cyanPickup"
