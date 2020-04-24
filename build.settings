@@ -5,53 +5,30 @@
 
 settings =
 {
-	orientation =
-	{
-		-- Supported values for orientation:
-		-- portrait, portraitUpsideDown, landscapeLeft, landscapeRight
-		default = "portrait",
-		supported = { "portrait", },
-	},
+    win32 =
+    {
+        singleInstance = true,
+    }, 
 
-	--
-	-- Android section
-	--
-	android =
-	{
-		usesPermissions =
-		{
-			"android.permission.INTERNET",
-		},
-	},
+    window =
+    {
+        defaultMode = "fullscreen",
+        suspendWhenMinimized = true,
+        titleText = {
+            default = "Pale"
+        }
+    },
 
-	--
-	-- iOS section
-	--
-	iphone =
-	{
-		xcassets = "Images.xcassets",
-		plist =
-		{
-			UIStatusBarHidden = false,
-			UILaunchStoryboardName = "LaunchScreen",
-		},
-	},
-
-	--
-	-- Plugins section
-	--
-	plugins =
-	{
-
-	},
-
+    splashScreen = 
+    {
+        enable = false
+    },
 	--
 	-- Project section
 	--
 	excludeFiles =
 	{
 		-- Exclude unnecessary files for each platform
-		all = { "Icon.png", "Icon-*dpi.png", "Images.xcassets", },
-		android = { "LaunchScreen.storyboardc", },
+		all = { "*.ico", "Icon-*dpi.png", "*widget_theme_*.png", "LaunchScreen.storyboardc", }
 	},
 }
