@@ -14,26 +14,25 @@
         ["Cyan"] = "Resources/Gfx/ice.png",
         ["Magenta"] = "Resources/Gfx/poison.png",
     }
-     
-    local obAmount = 0;
+
     local obArray = {}
 
     local function obstacles_SpawnAll(fileName)
-        while (obAmount < 6) do --spawn 6 obstacles
+        while (#obArray < 6) do --spawn 6 obstacles
             local dimensions = math.random(100, 200)
             local ob = displayMan.newRandomImageRect(fileName, dimensions, dimensions)
             physics.addBody(ob, "static", {density=1.0, filter=obstacleCollisionFilter})
-            obArray[obAmount] = ob
-            obAmount = obAmount+1            
+            table.insert(obArray, ob)       
         end	
     end
     
     local function obstacles_RemoveAll()
-        while (obAmount > 0) do
-            physics.removeBody(obArray[obAmount-1])
-            displayMan.remove(obArray[obAmount-1])	
-            obAmount = obAmount-1
+        for i,v in ipairs(obArray) do
+            v.isVisible = false
+            displayMan.remove(v)
+            v = nil
         end
+        obArray = {}
     end
 
     --to be used as a callback
