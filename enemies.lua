@@ -22,7 +22,7 @@
 
     local function createEn1() -- Somber Spirit
         local width, height = 50, 50
-        local en = displayMan.newRandomImageRect("Resources/Gfx/static2.png", width, height)
+        local en = displayMan.newRandomImageRect("Resources/Gfx/static.png", width, height)
         en.stroke = { 1, 1, 1 }
         en.strokeWidth = 4
         --local en = displayMan.newRandomRect(width, height)
