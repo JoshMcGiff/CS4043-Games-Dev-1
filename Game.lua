@@ -63,6 +63,9 @@ function pauseGame()
     if (not (pickupSpawnTimer == nil)) then
         timer.pause(pickupSpawnTimer)
     end
+    if (not (countDownTimer == nil)) then
+        timer.pause(countDownTimer)
+    end
     pickupFuncs.pause()
     player.pause()
     physics.pause()
@@ -101,6 +104,9 @@ function deathGame()
     if (not (pickupSpawnTimer == nil)) then
         timer.pause(pickupSpawnTimer)
     end
+    if (not (countDownTimer == nil)) then
+        timer.pause(countDownTimer)
+    end
     pickupFuncs.pause()
     player.pause()
     physics.pause()
@@ -124,6 +130,9 @@ function GameScene:resumeGame()
     end
     if (not (pickupSpawnTimer == nil)) then
         timer.resume(pickupSpawnTimer)
+    end
+    if (not (countDownTimer == nil)) then
+        timer.resume(countDownTimer)
     end
 end
 
