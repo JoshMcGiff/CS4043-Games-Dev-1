@@ -22,8 +22,11 @@
 
     local function createEn1() -- Stationary beech
         local width, height = 50, 50
-        local en = displayMan.newRandomRect(width, height)
-        en:setFillColor(0,0,0) --make enemy black
+        local en = displayMan.newRandomImageRect("Resources/Gfx/static2.png", width, height)
+        en.stroke = { 1, 1, 1 }
+        en.strokeWidth = 4
+        --local en = displayMan.newRandomRect(width, height)
+        --en:setFillColor(0,0,0) --make enemy black
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         en.myName = "en1"
         en.lives = 3.0 --has 3 lives
@@ -31,8 +34,9 @@
     end
 
     local function createEn2() -- Suicide Bomber Beech (white Ghost thingz)
-        local width, height = 30, 30
-        local en = displayMan.newRandomRect(width, height)
+        local width, height = 32, 32
+        local en = displayMan.newRandomImageRect("Resources/Gfx/ghost.png", width, height)
+        --local en = displayMan.newRandomRect(width, height)
         en:setFillColor(1,1,1) --make enemy white
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         en.myName = "en2"
@@ -49,7 +53,9 @@
         local vertices = {0,-110, 27,-35, -27,-35}
         
         local en = displayMan.newRandomPolygon(vertices)
-        en.fill = { type="image", filename="Resources/Gfx/lava.png" }
+        en.fill = { type="image", filename="Resources/Gfx/triangle.png" }
+        en.stroke = { 0, 0, 0 }
+        en.strokeWidth = 4
         physics.addBody(en, "static", {density = 1.0, friction = 0.0, bounce = 0.9, filter=enemyCollisionFilter})
         timer.performWithDelay(4000, function() 
             speed = getMoveSpeed()

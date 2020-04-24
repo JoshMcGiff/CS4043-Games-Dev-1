@@ -199,10 +199,10 @@ function GameScene:create(event)
     Wall2 = display.newRect(960,0,1920,10)
     Wall3 = display.newRect(960,1080,1920,10)
     Wall4 = display.newRect(0,540,10,1080)
-    Wall1:setFillColor(1,1,0)
-    Wall2:setFillColor(0,1,1)
-    Wall3:setFillColor(0,1,1)
-    Wall4:setFillColor(0,1,0)
+    Wall1:setFillColor(0.16,0.16,0.16)
+    Wall2:setFillColor(0.16,0.16,0.16)
+    Wall3:setFillColor(0.16,0.16,0.16)
+    Wall4:setFillColor(0.16,0.16,0.16)
 
     physics.addBody(Wall1, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
     physics.addBody(Wall2, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
@@ -210,6 +210,10 @@ function GameScene:create(event)
     physics.addBody(Wall4, "static", {friction=0.5, bounce=1.0, filter=wallCollisionFilter})
 
     displayMan.Setup() --should always be done first
+    clockText = display.newText("00.00", (display.contentCenterX + display.contentCenterX * 0.79) , display.contentCenterY * 0.3, "Resources/Gfx/Doctor Glitch.otf", 75)
+    clockText:setFillColor(0,0,0)
+    countDownTimer = timer.performWithDelay(1000, updateTime, -1) --update clock every second
+    clockText:toFront()
     pickupFuncs.Setup(afterRingPickup) --'afterRingPickup' is called after player picks an initial colour
     afterRingSetup = false
     obstacleFuncs.Setup()
@@ -221,10 +225,7 @@ function GameScene:create(event)
     background:toBack()
     secondsLeft = 0
     colourMan.addCallback(changeBackground)
-    clockText = display.newText("00.00", display.contentCenterX/5, 80, "Resources/Gfx/Doctor Glitch.otf", 150)
-    clockText:setFillColor(0,0,0)
-
-    countDownTimer = timer.performWithDelay(1000, updateTime, -1) --update clock every second
+    
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)

@@ -27,14 +27,15 @@ function AchieveMenuUI:create(event)
         x = display.contentWidth-backBtnDistance,
         y = display.contentHeight-backBtnDistance,
         id = "btnMainMenu",
-        label = "Icon\nHere",
+        --overFile = "Resources/Gfx/back.png",
+        label = "X",
         onPress = backToMainMenu,
         shape = "Rect",
         width = 50,
         height = 50,
         cornerRadius = 2,
-        fillColor = { default={0,1,0,1}, over={1,0.1,0.7,0.4} },
-        strokeColor = { default={0,0.4,0,1}, over={0.8,0.8,1,1} },
+        --fillColor = { default={0,1,0,1}, over={1,0.1,0.7,0.4} },
+        strokeColor = { default={0.16,0.16,0.16,1}, over={0.16,0.16,0.16,1} },
         strokeWidth = 4
     })
     -- Achievement 1:
