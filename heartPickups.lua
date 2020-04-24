@@ -16,7 +16,7 @@ local function heartCollision(self, event)
     end
 end
     
-local function hearts_RemoveAll()
+function heartFuncs.RemoveAll()
     for i,v in ipairs (heartArray) do
         display.remove(v)
     end

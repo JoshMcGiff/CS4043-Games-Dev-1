@@ -5,6 +5,7 @@ local colourMan = require("colourManager")
 local displayMan = require("displayManager")
 local obstacleFuncs = require("obstacles")
 local pickupFuncs = require("pickups")
+local heartFuncs = require("heartPickups")
 local enemies = require("enemies")
 local player = require("player")
 local physics = require("physics")
@@ -69,6 +70,7 @@ function pauseGame()
 end
 
 function deathGame()
+    heartFuncs.RemoveAll()
 
     --Remove UI before screenshot
     display.remove(clockText)
