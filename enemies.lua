@@ -187,6 +187,7 @@
     function enemyFuncs.Setup()
         enbulletForce = 0.5
         heartSpawnRate = 20
+        enMoveSpeed = 2000
         enemies_RemoveAll()
         enemies_SpawnAll()
         colourMan.addCallback(updaterCallback) --add function to colour manager callbacks, which get called when we get a new colour
