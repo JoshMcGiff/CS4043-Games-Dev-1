@@ -33,7 +33,7 @@
     local player_back = nil
     local player_left = nil
     local player_right = nil
-    local playerMaxLives = 300
+    local playerMaxLives = 3
     local lives = playerMaxLives
 
     local function updateImage(curImage)
