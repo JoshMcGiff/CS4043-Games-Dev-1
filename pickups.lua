@@ -6,12 +6,12 @@
     local pickupCollisionFilter = {categoryBits=4, maskBits=1}    --Pickups (4) collide with player (1)
 
     local soundTable = {
-        ["bluePickup"] = audio.loadStream("Resources/Audio/Blue.wav"),
-	    ["greenPickup"] = audio.loadStream("Resources/Audio/Green.wav"),
-	    ["redPickup"] = audio.loadStream("Resources/Audio/Red.wav"),
-	    ["yellowPickup"] = audio.loadStream("Resources/Audio/Yellow.wav"),
-	    ["magentaPickup"] = audio.loadStream("Resources/Audio/Magenta.wav"),
-        ["cyanPickup"] = audio.loadStream("Resources/Audio/Cyan.wav"),
+        ["Blue"] = audio.loadSound("Resources/Audio/Blue.wav"),
+	    ["Green"] = audio.loadSound("Resources/Audio/Green.wav"),
+	    ["Red"] = audio.loadSound("Resources/Audio/Red.wav"),
+	    ["Yellow"] = audio.loadSound("Resources/Audio/Yellow.wav"),
+	    ["Magenta"] = audio.loadSound("Resources/Audio/Magenta.wav"),
+        ["Cyan"] = audio.loadSound("Resources/Audio/Cyan.wav"),
     }
 
     local colourTable = {
@@ -23,7 +23,7 @@
         ["cyanPickup"] = "Cyan"
     }
     
-    local pickUpSound = nil
+    local pickUpSound = audio.loadSound("Resources/Audio/pickup.wav")
     local pickUpCallback = nil
 
     local bluePickup = nil
@@ -37,6 +37,13 @@
     local pickupStartTable = {}
     local pickupTable = {}
 
+    --colour manager callback (change audio when change colour)
+    local function reloadAudio()
+            audio.stop() --stop previous audio
+            audio.play(pickUpSound) --sound played when you pickup something
+            audio.play(soundTable[colourMan.getColourString()], {loops= -1, fadein = 500})
+    end
+
     -- THESE ARE FOR PICKUPS SPAWNING IN A RING AT START OF GAME --
     local function pickupStart_RemoveAll()
         for i,v in ipairs(pickupStartTable) do
@@ -49,13 +56,13 @@
 
     local function pickupStartCollisions(self, event)
         if event.phase == "began" and event.other.myName == "player" then
-            audio.stop() --stop previous audio
-            audio.play(soundTable[self.myName], {loops= -1, fadein = 500})
+            self:removeEventListener("collision")
             timer.performWithDelay(50, function() colourMan.setCommonColour(colourTable[self.myName], true) end)
             timer.performWithDelay(50, pickupStart_RemoveAll, 1)
             
             if (not (pickUpCallback == nil)) and type(pickUpCallback) == "function" then
                 timer.performWithDelay(50, pickUpCallback, 1) --start spawning enemies, more pickups, etc
+                pickUpCallback = nil --not needed anymore, remove so cant be called again
             end
 		end
     end
@@ -127,10 +134,6 @@
 
     local function pickupCollisions(self, event)
         if event.phase == "began" and event.other.myName == "player" then
-            audio.stop() --stop previous audio
-            audio.play(pickUpSound) --sound played when you pickup something
-
-            audio.play(soundTable[self.myName], {loops= -1, fadein = 500})
             --timer needed as cant change collisions in collision event
             timer.performWithDelay(50, function() colourMan.setCommonColour(colourTable[self.myName], true) end)
 			displayMan.remove(self)
@@ -206,7 +209,6 @@
     end
 
     function pickupFuncs.Setup(callback)
-        pickUpSound = audio.loadStream("Resources/Audio/switch.wav")
         --Initially Spawn in All 6 colours --
         spawnStartBlue()
         spawnStartRed()
@@ -215,6 +217,7 @@
         spawnStartYellow()
         spawnStartCyan()
         pickUpCallback = callback
+        colourMan.addCallback(reloadAudio)
     end
 
     function pickupFuncs.Cleanup()
