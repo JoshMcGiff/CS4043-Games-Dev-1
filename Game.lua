@@ -131,6 +131,16 @@ function GameScene:resumeGame()
 end
 
 function GameScene:cleanupGame()
+    heartFuncs.RemoveAll()
+
+    --Remove UI before screenshot
+    display.remove(clockText)
+    for i,v in ipairs(livesArray) do
+        display.remove(v)
+        v = nil
+    end
+    livesArray = {}
+
     Runtime:removeEventListener("key", spawn_PauseMenu)
     if (not (enemyShootTimer == nil)) then
         timer.cancel(enemyShootTimer)
@@ -191,7 +201,7 @@ local function afterRingPickup()
 end
 
 function GameScene:create(event)
-    composer.removeScene("deathScreen")
+    composer.removeHidden()
     audio.stop()
     local whiteSound = audio.loadStream("Resources/Audio/2sh.wav")
     audio.setVolume(0.5)
