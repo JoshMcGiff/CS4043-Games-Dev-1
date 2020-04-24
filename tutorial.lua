@@ -3,9 +3,7 @@ local widget = require( "widget" )
 local composer = require( "composer" )
 local colourFuncs = require("colourManager")
 local TutorialMenuUI = composer.newScene()
-local TutorialGroup
-local i = 120
-local j = 70
+local TutorialGroup = nil
 
 local function ToGame()
     composer.gotoScene("Game", {time=500, effect="crossFade"})
@@ -20,23 +18,21 @@ function TutorialMenuUI:create(event)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
   
-
     btnGame = widget.newButton({
         parent = self.view,
-        x = display.contentWidth-i,
-        y = display.contentHeight-j,
+        x = display.contentCenterX,
+        y = display.contentCenterY,
         id = "btnGame",
-        label = "Icon\nHere",
+        label = "",
         onPress = ToGame,
         shape = "Rect",
-        width = 200,
-        height = 100,
+        width = display.contentWidth,
+        height = display.contentHeight,
         cornerRadius = 2,
-        fillColor = { default={0,1,0,1}, over={1,0.1,0.7,0.4} },
-        strokeColor = { default={0,0.4,0,1}, over={0.8,0.8,1,1} },
-        strokeWidth = 4
+        fillColor = {default={0,0,0,0.1}, over={0,0,0,0.1}},
     })
 
+    TutorialGroup:insert(background)
    TutorialGroup:insert(btnGame)
 end
 
