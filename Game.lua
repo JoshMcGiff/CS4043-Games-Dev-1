@@ -193,6 +193,7 @@ local function afterRingPickup()
     enemySpawnTimer = timer.performWithDelay(2500, function() enemies.SpawnRandom() end, -1) --spawn enemy every 4 seconds
     enemyShootTimer = timer.performWithDelay(2500, function() enemies.allShoot() end, -1) --every 2.5 seconds make all enemies shoot at player 
     pickupSpawnTimer = timer.performWithDelay(5000, function() pickupFuncs.SpawnRandomPickup() end, -1)
+    countDownTimer = timer.performWithDelay(1000, updateTime, -1) --update clock every second
     afterRingSetup = true
 end
 
@@ -221,7 +222,6 @@ function GameScene:create(event)
     displayMan.Setup() --should always be done first
     clockText = display.newText("00.00", (display.contentCenterX + display.contentCenterX * 0.79) , display.contentCenterY * 0.3, "Resources/Gfx/Doctor Glitch.otf", 75)
     clockText:setFillColor(0,0,0)
-    countDownTimer = timer.performWithDelay(1000, updateTime, -1) --update clock every second
     clockText:toFront()
     pickupFuncs.Setup(afterRingPickup) --'afterRingPickup' is called after player picks an initial colour
     afterRingSetup = false
