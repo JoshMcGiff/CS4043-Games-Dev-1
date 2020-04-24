@@ -117,24 +117,8 @@ function MainMenuUI:hide( event )
 	end
 end
 
-
--- destroy()
-function MainMenuUI:destroy( event )
-    
-	local sceneGroup = self.view
-    print("destroy main menu\n")
-	-- Code here runs prior to the removal of scene's view
-
-end
-
-
--- -----------------------------------------------------------------------------------
--- Scene event function listeners
--- -----------------------------------------------------------------------------------
-MainMenuUI:addEventListener( "create", MainMenuUI )
-MainMenuUI:addEventListener( "show", MainMenuUI )
-MainMenuUI:addEventListener( "hide", MainMenuUI )
-MainMenuUI:addEventListener( "destroy", MainMenuUI )
--- -----------------------------------------------------------------------------------
+MainMenuUI:addEventListener("create", MainMenuUI)
+MainMenuUI:addEventListener("show", MainMenuUI)
+MainMenuUI:addEventListener("hide", MainMenuUI)
 
 return MainMenuUI

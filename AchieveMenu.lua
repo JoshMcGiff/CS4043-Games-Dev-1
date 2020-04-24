@@ -87,7 +87,6 @@ end
 
 -- hide()
 function AchieveMenuUI:hide( event )
-	local sceneGroup = self.view
 	local phase = event.phase
 
 	if ( phase == "will" ) then
@@ -102,11 +101,8 @@ end
 
 -- destroy()
 function AchieveMenuUI:destroy( event )
-    local sceneGroup = self.view
-    print("AchieveMenuUI:destroy\n")
+    --print("AchieveMenuUI:destroy\n")
     display:remove(AchieveGroup)
-	-- Code here runs prior to the removal of scene's view
-
 end
 
 

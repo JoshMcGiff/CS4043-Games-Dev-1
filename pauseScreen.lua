@@ -71,8 +71,6 @@ end
 
 -- show()
 function pauseUI:show( event )
-
-	local sceneGroup = self.view
 	local phase = event.phase
 
 	if ( phase == "will" ) then
@@ -105,14 +103,8 @@ function pauseUI:hide( event )
 	end
 end
 
-
--- -----------------------------------------------------------------------------------
--- Scene event function listeners
--- -----------------------------------------------------------------------------------
-pauseUI:addEventListener( "create", pauseUI )
-pauseUI:addEventListener( "show", pauseUI )
-pauseUI:addEventListener( "hide", pauseUI )
---pauseUI:addEventListener( "destroy", pauseUI )
--- -----------------------------------------------------------------------------------
+pauseUI:addEventListener("create", pauseUI)
+pauseUI:addEventListener("show", pauseUI)
+pauseUI:addEventListener("hide", pauseUI)
 
 return pauseUI

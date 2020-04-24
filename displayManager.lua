@@ -23,17 +23,8 @@ function managerFuncs.isPosUsed(row,col,w,h)
     return false
 end
 
---[[
 local function setPosCommon(row,col,w,h,used)
-    for i = row, (row+h), 1 do
-        for j = col, (col+w), 1 do
-            displayGrid[i][j] = used
-        end
-    end
-end
---]]
-local function setPosCommon(row,col,w,h,used)
-    r = math.floor(row) --for some reason obstacles become a float and have a decimal, breaking the array? this is a dirty fix for now
+    r = math.floor(row) --make sure row and cols have no decimal for whatever reason
     c = math.floor(col)
     for i = r, (r+h), 1 do
         for j = c, (c+w), 1 do
@@ -129,7 +120,7 @@ function managerFuncs.newRandomPolygon(vertices)
         end
     end
 
-    print(string.format("W: %d, H: %d", width, height))
+    --print(string.format("W: %d, H: %d", width, height))
 
     local posX, posY = managerFuncs.getRandomLocation(width, height)
     local obj = display.newPolygon(posX, posY, vertices)

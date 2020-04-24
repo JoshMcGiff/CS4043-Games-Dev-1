@@ -84,12 +84,12 @@
     local function player_mouseBullet(event)
         if (event.phase == "ended") then
             if (event.x >= 0 and event.x <= display.contentWidth and event.y >= 0 and event.y <= display.contentHeight) then
-                --Make the bullet always have same force applied using vector mAgIc (thanks Stephen Maguire and google xoxo)
+                --Make the bullet always have same force applied using vector maths
                 local vecX = event.x-playerFuncs.getX()
                 local vecY = event.y-playerFuncs.getY()
                 local magnitude = math.sqrt((vecX*vecX)+(vecY*vecY))
 
-                -- normalize vector f
+                --normalize vector
                 if (magnitude > 0) then
                   vecX = vecX / magnitude
                   vecY = vecY / magnitude
@@ -98,7 +98,7 @@
                 player_bulletCommon(vecX*bulletForce, vecY*bulletForce)
             end
         end
-        return true  -- Prevents tap/touch propagation to underlying objects
+        return true  --Apparently prevents tap/touch propagation to underlying objects
     end
 
     local function playerCollisions(self, event)
@@ -126,7 +126,7 @@
                 deathGame()
             end
 
-            print("REMOVED A LIFE, LIVES LEFT: " .. playerFuncs.getLives())
+            --print("REMOVED A LIFE, LIVES LEFT: " .. playerFuncs.getLives())
         end
     end
 

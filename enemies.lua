@@ -20,7 +20,7 @@
         return enMoveSpeed
     end
 
-    local function createEn1() -- Stationary beech
+    local function createEn1() -- Somber Spirit
         local width, height = 50, 50
         local en = displayMan.newRandomImageRect("Resources/Gfx/static2.png", width, height)
         en.stroke = { 1, 1, 1 }
@@ -33,7 +33,7 @@
         return en
     end
 
-    local function createEn2() -- Suicide Bomber Beech (white Ghost thingz)
+    local function createEn2() -- Lost Soul
         local width, height = 32, 32
         local en = displayMan.newRandomImageRect("Resources/Gfx/ghost.png", width, height)
         --local en = displayMan.newRandomRect(width, height)
@@ -49,7 +49,7 @@
         return en
     end
 
-    local function createEn3() -- Depression Demonz (triangle ones)        
+    local function createEn3() -- Ghoul
         local vertices = {0,-110, 27,-35, -27,-35}
         
         local en = displayMan.newRandomPolygon(vertices)
@@ -138,7 +138,7 @@
         end
 
         if (colourMan.getColourString() == "Green") then
-            heartSpawnRate = 10 --We decrease heart spawn rate when green
+            heartSpawnRate = 10 --We increase heart spawn rate when green
         else
             heartSpawnRate = 20
         end

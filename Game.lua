@@ -45,14 +45,6 @@ local function spawn_PauseMenu(event)
     end
 end
 
-local function spawn_DeathScreen(event)
-    if (event.phase == "down") then
-        if (event.keyName == "0") then
-            deathGame()
-        end
-    end
-end
-
 function pauseGame()
     if (not (enemyShootTimer == nil)) then
         timer.pause(enemyShootTimer)
@@ -138,7 +130,6 @@ end
 
 function GameScene:cleanupGame()
     Runtime:removeEventListener("key", spawn_PauseMenu)
-    Runtime:removeEventListener("key", spawn_DeathScreen)
     if (not (enemyShootTimer == nil)) then
         timer.cancel(enemyShootTimer)
     end
@@ -238,26 +229,11 @@ function GameScene:create(event)
 
     display.setDefault("background", 204/255,204/255,204/255)
     Runtime:addEventListener("key", spawn_PauseMenu)
-    Runtime:addEventListener("key", spawn_DeathScreen)
 end
 
 local function updateColour()
     colourMan.updateObjColour(background)
 end
-    
--- show()
-function GameScene:show(event)
-
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if (phase == "will") then
-
-    elseif (phase == "did") then
-
-    end
-end
-
 
 -- hide()
 function GameScene:hide(event)
@@ -266,23 +242,11 @@ function GameScene:hide(event)
 
     if (phase == "will") then
         self:cleanupGame()
-
-    elseif (phase == "did") then
-
     end
-end
-
-
--- destroy()
-function GameScene:destroy(event)
-    local sceneGroup = self.view
-    print("GameScene:destroy\n")
 end
 
 -- Scene event function listeners
 GameScene:addEventListener( "create", GameScene )
-GameScene:addEventListener( "show", GameScene )
 GameScene:addEventListener( "hide", GameScene )
-GameScene:addEventListener( "destroy", GameScene )
 
 return GameScene

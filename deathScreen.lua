@@ -100,7 +100,6 @@ end
 
 -- hide()
 function deathUI:hide( event )
-	local sceneGroup = self.view
 	local phase = event.phase
 
 	if ( phase == "will" ) then
@@ -111,10 +110,8 @@ function deathUI:hide( event )
         display.remove(gameOverText)
         display.remove(screenCap)
         screenCap, scoreText, gameOverText, btnRestartGame, btnMainMenu = nil, nil, nil, nil, nil
-        secondsSurvivied = 0        
-
-	elseif (phase == "did") then
-	end
+        secondsSurvivied = 0
+    end
 end
 
 
@@ -124,7 +121,6 @@ end
 deathUI:addEventListener( "create", deathUI )
 deathUI:addEventListener( "show", deathUI )
 deathUI:addEventListener( "hide", deathUI )
---deathUI:addEventListener( "destroy", deathUI )
 -- -----------------------------------------------------------------------------------
 
 return deathUI
