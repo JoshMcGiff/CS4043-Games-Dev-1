@@ -1,4 +1,4 @@
-# Pâle (CS4043 Game Dev)
+# Pâle (A1 project written in Lua using Corona Engine, for the module: CS4043 Game Development)
 
 Pâle is a game developed in Lua using [Corona Engine](https://coronalabs.com/). This was a group project, set out by module CS4043.
 
